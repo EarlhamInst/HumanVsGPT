@@ -12,3 +12,6 @@ out/
 
 # Extracted PDF text, keyed by source-file hash; regenerable from the corpus.
 .cache/
+
+# editable install artefacts
+*.egg-info/

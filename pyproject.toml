@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "manifest-compare"
+version = "0.1.0"
+description = "Compare metadata manifests extracted from the same manuscript by different annotators"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Felix Shaw", email = "felix.shaw@earlham.ac.uk" }]
+keywords = ["metadata", "curation", "single-cell", "provenance", "extraction"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+dependencies = ["openpyxl>=3.1"]
+
+[project.optional-dependencies]
+# Optional throughout: the package falls back to a pure-Python implementation
+# when these are absent, so results never depend on which path runs.
+fast = ["scipy>=1.10", "numpy>=1.24"]     # C assignment solver for large sheets
+pdf = ["pymupdf>=1.23"]                   # grounding against source manuscripts
+dev = ["pytest>=7.4"]
+
+[project.scripts]
+manifest-compare = "manifest_compare.cli:main"
+
+[project.urls]
+Repository = "https://github.com/EarlhamInst/HumanVsGPT"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/manifest_compare"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
