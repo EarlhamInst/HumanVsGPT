@@ -58,3 +58,21 @@ def test_a_blank_reference_value_is_unknown_not_false():
 
 def test_two_blanks_are_not_a_comparison():
     assert outcome("sample", "tissue", "", "") is Outcome.BOTH_ABSENT
+
+
+def test_a_maker_against_its_machine_is_specificity_not_conflict():
+    # 'NextSeq 500' and 'Illumina' agree as far as either goes; token
+    # containment cannot see it, because 'Illumina' is not a word in
+    # 'NextSeq 500'.
+    assert outcome(
+        "sequencing", "sequencing_platform_name", "NextSeq 500", "Illumina"
+    ) is Outcome.TEST_LESS_SPECIFIC
+    assert outcome(
+        "sequencing", "sequencing_platform_name", "Illumina", "DNBSEQ-T7"
+    ) is Outcome.CONFLICT  # different makers really do disagree
+
+
+def test_two_bare_maker_names_agree():
+    assert outcome(
+        "sequencing", "sequencing_platform_name", "Illumina", "illumina"
+    ) is Outcome.EQUIVALENT

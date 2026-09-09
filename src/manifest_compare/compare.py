@@ -45,7 +45,15 @@ from enum import Enum
 
 from .align import Alignment, SheetAlignment, align
 from .io import Manifest
-from .normalise import accessions, canonical, fold, quantity, tokens
+from .normalise import (
+    accessions,
+    canonical,
+    fold,
+    manufacturer_of,
+    names_only_manufacturer,
+    quantity,
+    tokens,
+)
 from .schema import (
     CLASS_WEIGHTS,
     PRIMARY_KEY,
@@ -293,6 +301,21 @@ def compare_vocab(column: str, reference: str, test: str) -> tuple[Outcome, str]
     implied = _specificity(reference, test)
     if implied:
         return implied, "by token containment"
+
+    # A maker against one of its machines is a difference of specificity, not a
+    # contradiction: 'Illumina' and 'NextSeq 500' agree as far as either goes.
+    reference_maker = manufacturer_of(reference)
+    test_maker = manufacturer_of(test)
+    if reference_maker and reference_maker == test_maker:
+        reference_bare = names_only_manufacturer(reference)
+        test_bare = names_only_manufacturer(test)
+        if test_bare and not reference_bare:
+            return Outcome.TEST_LESS_SPECIFIC, f"names the maker ({test_maker}) only"
+        if reference_bare and not test_bare:
+            return Outcome.TEST_MORE_SPECIFIC, f"names the instrument, not just {reference_maker}"
+        if reference_bare and test_bare:
+            return Outcome.EQUIVALENT, f"both name {test_maker}"
+
     ratio = SequenceMatcher(None, ref_canonical, test_canonical).ratio()
     if ratio >= TEXT_NEAR_IDENTICAL:
         return Outcome.EQUIVALENT, f"near-identical ({ratio:.2f}); likely a typo"

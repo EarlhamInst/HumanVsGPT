@@ -60,8 +60,12 @@ Over 21 pairs, 6,487 field comparisons:
 * recall **43.6%**, precision **69.7%**, structural fidelity **71%**
 * the model's dominant failure is silence, not error: `missing_in_test` is the
   largest single outcome at 36.9%
-* both manifests are overwhelmingly grounded in their papers -- **90.9%** human,
-  **80.1%** GPT of assessable values
+* both manifests are overwhelmingly grounded in their papers -- **93.7%** human,
+  **84.4%** GPT of assessable values. Of the human values that are not, almost
+  none are errors: they are ORCIDs looked up externally, standard terminology
+  the paper words differently, and controlled-vocabulary inferences such as
+  `Eukaryota; Viridiplantae`. Grounding detects absence from the document, not
+  invention
 * of the 1,622 fields the model filled where the human was silent, **74.8%** are
   traceable to the paper and only **1.3%** are unsupported. The model's extra
   coverage is largely real content, not invention

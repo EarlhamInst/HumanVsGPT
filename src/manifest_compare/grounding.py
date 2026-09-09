@@ -92,12 +92,28 @@ def read_pdf(path: str | Path) -> str:
     return fold(raw)
 
 
+#: A word broken across a line by the PDF's typesetting: a hyphen, then the
+#: whitespace the line break folded into, then the rest of the word.
+_LINE_BREAK_HYPHEN = re.compile(r"(\w)-\s+(\w)")
+
+
 class PaperText:
-    """A paper's folded text, with a cached token set for fast lookup."""
+    """A paper's folded text, with a cached token set for fast lookup.
+
+    PDF typesetting hyphenates words at column boundaries, so the Turco methods
+    section contains `cy-cles`, not `cycles`. Taking that at face value made the
+    checker report a value as unsupported when the paper states it outright --
+    and biased it against detailed values, because long technical words are the
+    ones that get broken. Tokens are therefore drawn from the text both as
+    extracted and with line-break hyphens closed up, so a word counts as present
+    however the typesetter split it.
+    """
 
     def __init__(self, text: str) -> None:
-        self.text = text
-        self.tokens = frozenset(_WORD.findall(text))
+        self.text = _LINE_BREAK_HYPHEN.sub(r"\1\2", text)
+        self.tokens = frozenset(_WORD.findall(self.text)) | frozenset(
+            _WORD.findall(text)
+        )
 
     @classmethod
     def from_pdf(cls, path: str | Path, cache_dir: str | Path | None = None) -> "PaperText":
@@ -127,6 +143,32 @@ class PaperText:
             if len(t) >= MIN_TOKEN_LENGTH and t not in NOISE
         ]
 
+    def _present(self, token: str) -> bool:
+        """Is a token in the paper, allowing for ordinary inflection?
+
+        A manifest says `protoplasts` where the paper says `protoplast`, and
+        `libraries` against `library`. Requiring an exact match counts those as
+        absent, which understates how much of a value the paper supports. Only
+        cheap, reversible English endings are tried; this is not a stemmer and
+        deliberately does not conflate distinct words.
+        """
+        if token in self.tokens:
+            return True
+        variants = {token + "s", token + "es"}
+        if token.endswith("s"):
+            variants.add(token[:-1])
+        if token.endswith("es"):
+            variants.add(token[:-2])
+        if token.endswith("ies"):
+            variants.add(token[:-3] + "y")
+        if token.endswith("y"):
+            variants.add(token[:-1] + "ies")
+        if token.endswith("ed"):
+            variants |= {token[:-2], token[:-1], token[:-2] + "ing"}
+        if token.endswith("ing"):
+            variants |= {token[:-3], token[:-3] + "e", token[:-3] + "ed"}
+        return any(v in self.tokens for v in variants)
+
     def assess(self, value: str) -> tuple[Grounding, float, tuple[str, ...]]:
         """Classify how far a value is traceable to this paper."""
         folded = fold(value)
@@ -136,8 +178,8 @@ class PaperText:
         if len(set(tokens)) < MIN_DISTINCTIVE:
             return Grounding.NOT_ASSESSABLE, 0.0, ()
         unique = sorted(set(tokens))
-        found = [t for t in unique if t in self.tokens]
-        missing = tuple(t for t in unique if t not in self.tokens)
+        found = [t for t in unique if self._present(t)]
+        missing = tuple(t for t in unique if not self._present(t))
         coverage = len(found) / len(unique)
         if coverage >= GROUNDED_AT:
             return Grounding.GROUNDED, coverage, missing

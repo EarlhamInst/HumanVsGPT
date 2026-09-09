@@ -106,6 +106,51 @@ VOCAB: dict[str, dict[str, str]] = {
 }
 
 
+#: Sequencing instrument models mapped to their manufacturer.
+#:
+#: `NextSeq 500` and `Illumina` are not a disagreement -- one names the machine
+#: and the other the maker -- but token containment cannot see that, because the
+#: word "Illumina" does not appear in "NextSeq 500". Without this the two score
+#: as a flat conflict rather than as one annotator being less specific.
+INSTRUMENT_MANUFACTURER: dict[str, str] = {
+    "novaseq": "illumina", "nextseq": "illumina", "hiseq": "illumina",
+    "miseq": "illumina", "miniseq": "illumina", "iseq": "illumina",
+    "nextera": "illumina",
+    "dnbseq": "mgi", "mgiseq": "mgi", "bgiseq": "bgi",
+    "sequel": "pacbio", "revio": "pacbio",
+    "promethion": "oxford nanopore", "minion": "oxford nanopore",
+    "gridion": "oxford nanopore",
+    "ion torrent": "thermo fisher", "proton": "thermo fisher",
+}
+
+MANUFACTURERS: frozenset[str] = frozenset(INSTRUMENT_MANUFACTURER.values())
+
+
+def manufacturer_of(value: object) -> str:
+    """The manufacturer a platform value denotes, if it names one at all."""
+    folded = fold(value)
+    for maker in MANUFACTURERS:
+        if maker in folded:
+            return maker
+    for model, maker in INSTRUMENT_MANUFACTURER.items():
+        if model in folded:
+            return maker
+    return ""
+
+
+def names_only_manufacturer(value: object) -> bool:
+    """True when a value names a maker and no particular machine."""
+    folded = fold(value)
+    if not folded:
+        return False
+    maker = manufacturer_of(value)
+    if not maker:
+        return False
+    if any(model in folded for model in INSTRUMENT_MANUFACTURER):
+        return False
+    return folded.replace(maker, "").strip(" -,;") == ""
+
+
 def canonical(column: str, value: object) -> str:
     """Canonical form of a controlled-vocabulary value, or the folded value."""
     folded = fold(value)

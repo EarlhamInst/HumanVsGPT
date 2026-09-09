@@ -52,5 +52,23 @@
     "decided_by": "felix.shaw@earlham.ac.uk",
     "decided_on": "2026-09-09",
     "note": "Granularity difference, not a factual disagreement. Worth noting in the write-up that the schema does not state the intended level of detail for these fields."
+  },
+  {
+    "id": "protocol_name_is_curator_assigned",
+    "column": "protocol_name",
+    "verdict": "both",
+    "rationale": "protocol_name is a label the curator assigns to a protocol, not a fact stated by the manuscript. The paper does not name its protocols, so any label that identifies the right procedure is valid and no value can be more correct than another. 'Grass Protoplast Isolation' and 'Monocot root protoplast generation' denote the same protocol; grasses are monocots, and isolation and generation name the same step.",
+    "decided_by": "felix.shaw@earlham.ac.uk",
+    "decided_on": "2026-09-09",
+    "note": "Curator-assigned label, so grounding against the manuscript is not the right test for this field at all. Worth noting in the write-up: grounding rewards matching the paper's chosen vocabulary, which is not the same as being correct, and for assigned-label fields it measures nothing."
+  },
+  {
+    "id": "samp_name_is_curator_assigned",
+    "column": "samp_name",
+    "verdict": "both",
+    "rationale": "samp_name is a label the curator assigns to a sample, not a fact the manuscript states. A study's own internal sample code and a descriptive name for the same material are both valid identifiers of it, so neither can be more correct than the other.",
+    "decided_by": "felix.shaw@earlham.ac.uk",
+    "decided_on": "2026-09-09",
+    "note": "Same class as protocol_name: grounding against the manuscript is not a meaningful test for an assigned label."
   }
 ]
