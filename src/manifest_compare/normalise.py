@@ -1,0 +1,179 @@
+"""Value normalisation: the layer that decides when two spellings mean one thing.
+
+Every non-trivial finding in the Cao comparison came down to normalisation. The
+two manifests write the same facts as '10x Genomics Chromium Single Cell 3'' and
+'10x Genomics Chromium Single-Cell 3'kit'; as 'protoplast' and 'Protoplast
+suspension'; as '27.0' and '26 degC'. Comparing raw strings would call all three
+disagreements. Comparing over-aggressively would hide the third, which is a real
+factual conflict.
+"""
+
+from __future__ import annotations
+
+import re
+import unicodedata
+
+# Unicode confusables seen across the corpus: curly quotes, the multiplication
+# sign in '10x Genomics', en/em dashes in 'cell type-specific', the prime in 3'.
+_PUNCT_MAP = {
+    "‘": "'", "’": "'", "ʼ": "'", "′": "'",
+    "“": '"', "”": '"',
+    "‐": "-", "‑": "-", "‒": "-", "–": "-",
+    "—": "-", "―": "-", "−": "-",
+    "×": "x", " ": " ",
+    "µ": "u", "μ": "u",
+}
+
+_COLUMN_SUFFIX = re.compile(r"\s*\(optional\)\s*$", re.I)
+
+
+def normalise_column(name: str) -> str:
+    """Strip the '(optional)' marker and unify case/spacing in a column header."""
+    if name is None:
+        return ""
+    out = _COLUMN_SUFFIX.sub("", str(name)).strip()
+    for bad, good in _PUNCT_MAP.items():
+        out = out.replace(bad, good)
+    return out.replace(" ", "_")
+
+
+def fold(value: object) -> str:
+    """Fold a cell value to a comparable form: NFKD, confusables mapped, cased down.
+
+    Preserves word content and internal punctuation so that specificity
+    comparisons still work; only presentation differences are erased.
+    """
+    if value is None:
+        return ""
+    text = str(value).strip()
+    for bad, good in _PUNCT_MAP.items():
+        text = text.replace(bad, good)
+    text = unicodedata.normalize("NFKD", text)
+    text = "".join(c for c in text if not unicodedata.combining(c))
+    return re.sub(r"\s+", " ", text).strip().lower()
+
+
+_TOKEN = re.compile(r"[a-z0-9]+")
+
+
+def tokens(value: object) -> frozenset[str]:
+    """Content tokens of a value, for set-containment (specificity) tests."""
+    return frozenset(_TOKEN.findall(fold(value))) - STOPWORDS
+
+
+STOPWORDS: frozenset[str] = frozenset(
+    {"the", "a", "an", "of", "and", "or", "for", "with", "in", "on", "at", "to",
+     "by", "from", "as", "was", "were", "is", "are", "be", "been", "that", "this",
+     "kit", "using", "used", "single", "cell", "cells"}
+)
+
+
+# --- Controlled vocabulary ---------------------------------------------------
+
+#: Maps a folded value onto a canonical term, per column. Deliberately small and
+#: explicit: an over-broad synonym table would mask real disagreements.
+VOCAB: dict[str, dict[str, str]] = {
+    "suspension_type": {
+        "protoplast": "protoplast",
+        "protoplasts": "protoplast",
+        "protoplast suspension": "protoplast",
+        "single-cell protoplast suspension": "protoplast",
+        "nucleus": "nucleus",
+        "nuclei": "nucleus",
+        "single nuclei": "nucleus",
+        "nuclei suspension": "nucleus",
+        "cell": "cell",
+        "single cell suspension": "cell",
+    },
+    "lib_layout": {
+        "paired": "paired", "paired-end": "paired", "pe": "paired",
+        "paired end": "paired",
+        "single": "single", "single-end": "single", "se": "single",
+    },
+    "primeness": {
+        "3'": "3-prime", "3": "3-prime", "3 prime": "3-prime",
+        "3-prime": "3-prime", "3' end": "3-prime",
+        "3-prime transcript capture": "3-prime",
+        "5'": "5-prime", "5": "5-prime", "5 prime": "5-prime",
+        "5-prime": "5-prime",
+    },
+    "input_molecule": {
+        "cdna": "cdna", "rna": "rna", "polya rna": "mrna",
+        "polyadenylated messenger rna": "mrna", "mrna": "mrna",
+        "dna": "dna", "genomic dna": "dna",
+    },
+    "ploidy": {"diploid": "diploid", "2n": "diploid", "haploid": "haploid", "1n": "haploid"},
+}
+
+
+def canonical(column: str, value: object) -> str:
+    """Canonical form of a controlled-vocabulary value, or the folded value."""
+    folded = fold(value)
+    return VOCAB.get(column, {}).get(folded, folded)
+
+
+# --- Identifiers -------------------------------------------------------------
+
+#: Accession patterns that can be verified against a public archive.
+ACCESSION_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
+    ("sra_run", re.compile(r"\b([SED]RR\d{5,})\b", re.I)),
+    ("sra_experiment", re.compile(r"\b([SED]RX\d{5,})\b", re.I)),
+    ("sra_sample", re.compile(r"\b([SED]RS\d{5,})\b", re.I)),
+    ("bioproject", re.compile(r"\b(PRJ[END][AB]\d+)\b", re.I)),
+    ("biosample", re.compile(r"\b(SAM[END][AG]?\d+)\b", re.I)),
+    ("geo_series", re.compile(r"\b(GSE\d+)\b", re.I)),
+    ("geo_sample", re.compile(r"\b(GSM\d+)\b", re.I)),
+    ("arrayexpress", re.compile(r"\b(E-[A-Z]{4}-\d+)\b", re.I)),
+    ("doi", re.compile(r"\b(10\.\d{4,9}/[^\s,;\"']+)", re.I)),
+    ("orcid", re.compile(r"\b(\d{4}-\d{4}-\d{4}-\d{3}[\dX])\b", re.I)),
+    ("taxon", re.compile(r"\bNCBI:txid(\d+)\b", re.I)),
+)
+
+
+def accessions(value: object) -> dict[str, frozenset[str]]:
+    """Extract every recognisable accession from a value, keyed by kind.
+
+    Free-text fields routinely bury accessions in prose -- GPT recorded the Cao
+    BioProject inside a sentence in `associated_resource`. Extracting rather than
+    string-matching lets a buried accession still count as captured.
+    """
+    text = str(value or "")
+    found: dict[str, frozenset[str]] = {}
+    for kind, pattern in ACCESSION_PATTERNS:
+        hits = {m.upper().rstrip(".,;") for m in pattern.findall(text)}
+        if hits:
+            found[kind] = frozenset(hits)
+    return found
+
+
+# --- Quantities --------------------------------------------------------------
+
+_NUMBER = re.compile(r"(-?\d+(?:\.\d+)?)\s*(?:x\s*10\^?(-?\d+))?\s*([a-z%/_]*)", re.I)
+
+#: Unit aliases folded to a canonical symbol before comparison.
+_UNIT_ALIASES = {
+    "c": "degc", "degc": "degc", "degreec": "degc", "celsius": "degc",
+    "ul": "ul", "microlitre": "ul", "microliter": "ul",
+    "ml": "ml", "l": "l", "bp": "bp", "nt": "nt", "mm": "mm", "cm": "cm",
+    "": "",
+}
+
+
+def quantity(value: object) -> tuple[float, str] | None:
+    """Parse a value into (magnitude, canonical unit), or None if not numeric.
+
+    Handles the forms actually present in the corpus: bare floats ('27.0'),
+    value-with-unit ('26 degC', '5-mm'), and scientific notation.
+    """
+    text = fold(value)
+    if not text:
+        return None
+    text = text.replace("degrees", "deg").replace("°", "deg")
+    match = _NUMBER.search(text)
+    if not match:
+        return None
+    magnitude = float(match.group(1))
+    if match.group(2):
+        magnitude *= 10 ** int(match.group(2))
+    unit = re.sub(r"[^a-z%]", "", match.group(3) or "")
+    return magnitude, _UNIT_ALIASES.get(unit, unit)

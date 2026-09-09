@@ -1,0 +1,56 @@
+[
+  {
+    "id": "input_molecule_is_sequenced_molecule",
+    "column": "input_molecule",
+    "verdict": "reference",
+    "reference_pattern": "^(cdna|complementary dna)$",
+    "test_pattern": "rna",
+    "rationale": "input_molecule denotes the molecule that reaches the sequencer. In a droplet or plate scRNA-seq experiment that is the finished cDNA library; the RNA is the capture input, not the sequenced molecule. The reference value cDNA is therefore correct and the test value naming an RNA species is not.",
+    "decided_by": "felix.shaw@earlham.ac.uk",
+    "decided_on": "2026-09-09",
+    "note": "Settles the largest single class of conflict in the corpus."
+  },
+  {
+    "id": "input_molecule_atac_is_transposed_dna",
+    "column": "input_molecule",
+    "verdict": "reference",
+    "reference_pattern": "genomic dna|transposed|tn5",
+    "test_pattern": "chromatin|nuclei|nuclear",
+    "rationale": "Same principle applied to ATAC-seq: the sequenced molecule is Tn5-transposed genomic DNA, not the chromatin or nuclei it was recovered from.",
+    "decided_by": "felix.shaw@earlham.ac.uk",
+    "decided_on": "2026-09-09",
+    "note": "Follows directly from input_molecule_is_sequenced_molecule; flagged to the decision-maker as an extension of that rule rather than a separately posed question."
+  },
+  {
+    "id": "input_molecule_both_name_capture_input",
+    "column": "input_molecule",
+    "verdict": "neither",
+    "reference_pattern": "^(m?rna|poly[- (]?a[)+ ]*.*rna|poly\\(a\\)\\+ rna.*)$",
+    "test_pattern": "rna",
+    "rationale": "Both annotators named the capture input (an RNA species) rather than the molecule that reaches the sequencer, so under the field definition neither value is correct. These cases matter for the write-up: they show the human curators were not internally consistent, some recording cDNA and others an RNA term for the same 10x chemistry. The disagreement is therefore evidence that the schema leaves input_molecule undefined, not that either annotator failed.",
+    "decided_by": "felix.shaw@earlham.ac.uk",
+    "decided_on": "2026-09-09",
+    "note": "Document in the analysis write-up as a schema defect to report to the PCA template maintainers."
+  },
+  {
+    "id": "standardised_protocol_label_vs_transcription",
+    "column": "dissociation_description",
+    "columns": [
+      "protocol_name",
+      "single_cell_quality_metric",
+      "dissociation_protocol_method",
+      "lib_construction_method",
+      "workflow",
+      "amplification_method"
+    ],
+    "verdict": "both",
+    "reference_pattern": ".",
+    "test_pattern": ".",
+    "reference_max_words": 8,
+    "test_min_words": 20,
+    "rationale": "In the free-text protocol fields the two annotators describe the same standardised method at different granularity: the reference records the method category (e.g. 'Trypan blue vitality stain'), the test transcribes the procedure with reagents and concentrations. These single-cell protocols are sufficiently standardised that a laboratory reader recovers the same method from either, so both values are valid. Applied only where the reference is a short label (<=8 words) and the test is a full transcription (>=20 words); disagreements of comparable length are left for individual adjudication, since those are not this pattern.",
+    "decided_by": "felix.shaw@earlham.ac.uk",
+    "decided_on": "2026-09-09",
+    "note": "Granularity difference, not a factual disagreement. Worth noting in the write-up that the schema does not state the intended level of detail for these fields."
+  }
+]
