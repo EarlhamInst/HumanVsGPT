@@ -1,0 +1,6 @@
+human_file,gpt_file,paper_title,sheet,rows,distinct_rows,redundant_rows,redundancy_ratio
+pca_manifest_nobori_2025.xlsx,Nobori et al. 2025 - A rare PRIMER cell state in plant immunity.xlsx,A rare PRIMER cell state in plant immunity,sample,21,1,20,0.952
+pca_manifest_guo_2025.xlsx,Guo et al. 2025 - An Arabidopsis single-nucleus atlas decodes leaf senescence and nutrient allocation.xlsx,An Arabidopsis single-nucleus atlas decodes leaf senescence and nutrient allocation,sequencing,338,23,315,0.932
+pca_manifest_Feng_2025.xlsx,Feng et al. 2022 - Chromatin accessibility illuminates single-cell regulatory dynamics of rice root tips.xlsx,Chromatin accessibility illuminates single-cell regulatory dynamics of rice root tips,sample,16,1,15,0.938
+pca_manifest_marchant_2025.xlsx,Marchant and Walbot 2025 - The establishment of the anther somatic niche with single-cell sequencing.xlsx,The establishment of the anther somatic niche with single-cell sequencing,sample,2182,1,2181,1.000
+pca_manifest_marand_2025.xlsx,Marand et al. 2025 - The genetic architecture of cell type-specific cis regulation in maize.xlsx,The genetic architecture of cell type–specific cis regulation in maize,lib_prep,40,2,38,0.950
