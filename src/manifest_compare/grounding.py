@@ -92,6 +92,52 @@ def read_pdf(path: str | Path) -> str:
     return fold(raw)
 
 
+#: Acronyms and their expansions, in both directions.
+#:
+#: An annotator writing `FACS` and a paper writing `fluorescence-activated cell
+#: sorting` say the same thing, but share no tokens, so the value scores as
+#: unsupported. The Roszak paper never uses the acronym and one manifest never
+#: uses the expansion, which cost that manifest twice on a single paper. Only
+#: unambiguous domain acronyms are listed; this is not a general abbreviation
+#: expander.
+ACRONYMS: dict[str, str] = {
+    "facs": "fluorescence activated cell sorting",
+    "grn": "gene regulatory network",
+    "sam": "shoot apical meristem",
+    "ms": "murashige skoog",
+    "utr": "untranslated region",
+    "umi": "unique molecular identifier",
+    "gfp": "green fluorescent protein",
+    "yfp": "yellow fluorescent protein",
+    "rfp": "red fluorescent protein",
+    "dapi": "diamidino phenylindole",
+    "pi": "propidium iodide",
+    "fda": "fluorescein diacetate",
+    "bsa": "bovine serum albumin",
+    "pcr": "polymerase chain reaction",
+    "atac": "assay transposase accessible chromatin",
+    "snrna": "single nucleus rna",
+    "scrna": "single cell rna",
+    "wt": "wild type",
+    "qc": "quality control",
+    "fpkm": "fragments per kilobase million",
+    "tpm": "transcripts per million",
+    "pbs": "phosphate buffered saline",
+    "edta": "ethylenediaminetetraacetic acid",
+    "dtt": "dithiothreitol",
+    "pmsf": "phenylmethylsulfonyl fluoride",
+    "rt": "reverse transcription",
+    "cdna": "complementary dna",
+    "sop": "standard operating procedure",
+}
+
+#: Reverse index: a word of an expansion -> the acronyms it belongs to.
+_EXPANSION_WORDS: dict[str, set[str]] = {}
+for _acronym, _phrase in ACRONYMS.items():
+    for _word in _phrase.split():
+        _EXPANSION_WORDS.setdefault(_word, set()).add(_acronym)
+
+
 #: A word broken across a line by the PDF's typesetting: a hyphen, then the
 #: whitespace the line break folded into, then the rest of the word.
 _LINE_BREAK_HYPHEN = re.compile(r"(\w)-\s+(\w)")
@@ -154,6 +200,13 @@ class PaperText:
         """
         if token in self.tokens:
             return True
+        # The manifest used an acronym the paper spells out, or the reverse.
+        expansion = ACRONYMS.get(token)
+        if expansion and all(w in self.tokens for w in expansion.split()):
+            return True
+        for acronym in _EXPANSION_WORDS.get(token, ()):
+            if acronym in self.tokens:
+                return True
         variants = {token + "s", token + "es"}
         if token.endswith("s"):
             variants.add(token[:-1])

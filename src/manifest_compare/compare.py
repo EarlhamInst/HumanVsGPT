@@ -40,6 +40,7 @@ way.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import re
 from difflib import SequenceMatcher
 from enum import Enum
 
@@ -245,6 +246,50 @@ def _specificity(reference: str, test: str) -> Outcome | None:
     return None
 
 
+_YEAR = re.compile(r"\b(1[89]\d{2}|20\d{2})\b")
+_SURNAME = re.compile(r"\b([a-z][a-z'-]{2,})\b")
+
+#: Words that look like surnames in a citation but are not.
+_CITATION_NOISE = frozenset(
+    """and the for van den der et al journal science nature cell plant methods
+    biology molecular research letters reports communications proceedings
+    national academy sciences vol pages doi pmid pmc available online http https
+    www org com""".split()
+)
+
+
+def citation_signature(value: str) -> tuple[frozenset[str], frozenset[str]]:
+    """The author surnames and years a citation mentions.
+
+    A reference cited as `Bargmann & Birnbaum, J. Vis. Exp. 2010; PMID 20168296`
+    and as `Bargmann B.O.R. and Birnbaum K.D. (2010). Fluorescence activated cell
+    sorting of plant protoplasts...` is the same reference in two formats. They
+    share no accession and little text, so a literal comparison calls them a
+    conflict -- on an identifier-class field, which carries the heaviest weight
+    in the score.
+    """
+    folded = fold(value)
+    years = frozenset(_YEAR.findall(folded))
+    names = frozenset(
+        w for w in _SURNAME.findall(folded)
+        if w not in _CITATION_NOISE and not w.isdigit()
+    )
+    return names, years
+
+
+def compare_citation(reference: str, test: str) -> tuple[Outcome, str] | None:
+    """Compare two citations by the work they name, or None if not citations."""
+    ref_names, ref_years = citation_signature(reference)
+    test_names, test_years = citation_signature(test)
+    if not (ref_years and test_years and ref_names and test_names):
+        return None
+    if not (ref_years & test_years) or not (ref_names & test_names):
+        return None
+    shared = sorted(ref_names & test_names)[:2]
+    year = sorted(ref_years & test_years)[0]
+    return Outcome.EQUIVALENT, f"same work ({', '.join(shared)} {year}), different format"
+
+
 def compare_identifier(reference: str, test: str) -> tuple[Outcome, str]:
     """Compare by the accessions each value contains, not by the whole string.
 
@@ -263,9 +308,15 @@ def compare_identifier(reference: str, test: str) -> tuple[Outcome, str]:
             return Outcome.TEST_LESS_SPECIFIC, f"test omits {sorted(ref_hits - test_hits)}"
         if ref_hits & test_hits:
             return Outcome.CONFLICT, f"partial overlap; test-only {sorted(test_hits - ref_hits)}"
+        citation = compare_citation(reference, test)
+        if citation:
+            return citation
         return Outcome.CONFLICT, f"disjoint: {sorted(ref_hits)} vs {sorted(test_hits)}"
     if fold(reference) == fold(test):
         return Outcome.EXACT, ""
+    citation = compare_citation(reference, test)
+    if citation:
+        return citation
     return Outcome.CONFLICT, "no accession recognised in either value"
 
 

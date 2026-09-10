@@ -76,3 +76,21 @@ def test_two_bare_maker_names_agree():
     assert outcome(
         "sequencing", "sequencing_platform_name", "Illumina", "illumina"
     ) is Outcome.EQUIVALENT
+
+
+def test_the_same_citation_in_two_formats_is_not_a_conflict():
+    # Identifier-class fields carry the heaviest weight in the score, so calling
+    # two formats of one reference a disagreement is expensive and wrong.
+    assert outcome(
+        "dissociation", "literature_source_reference",
+        "Bargmann & Birnbaum, J. Vis. Exp. 2010; PMID 20168296",
+        "Bargmann B.O.R. and Birnbaum K.D. (2010). Fluorescence activated cell "
+        "sorting of plant protoplasts. Journal of Visualized Experiments 36:1673.",
+    ) is Outcome.EQUIVALENT
+
+
+def test_different_works_still_conflict():
+    assert outcome(
+        "dissociation", "literature_source_reference",
+        "Smith et al. 2019", "Jones et al. 2021",
+    ) is Outcome.CONFLICT

@@ -47,11 +47,41 @@ conflicts, 100 have the human grounded in the paper and GPT not, but **64 are
 the other way round** -- roughly one disagreement in seven where the reference is
 the weaker answer. Every one of those currently scores against GPT.
 
-**1.5 Numeric fields are the weak class.** *(established)* 12.1% recall against
+**1.5 The two annotators differ in kind, not only in quality: the human applies
+expert inference, GPT stays close to the text.** *(established, from
+adjudication)*
+
+The human curator routinely records what is conventional but unstated -- `agar`
+for a paper that says only "MS plates", `enzymatic` for protoplasting, `Smart-seq2`
+where the paper says "well-based Smart-seq" -- and writes in domain shorthand
+(`FACS`, `GRN`, pipeline arrows). GPT records what the manuscript actually says,
+in the manuscript's own vocabulary, and adds detail the human omits.
+
+This is a defensible difference rather than an error on either side: the audience
+for these manifests is necessarily expert and will read "MS plates" as agar
+plates. But it has three consequences that must be reported.
+
+* It is invisible to, and penalised by, any text-grounding measure. Inference and
+  shorthand share no vocabulary with the paper, so the human's correct-but-unstated
+  values score as unsupported (see 2.3, 2.4).
+* It is the mechanism behind most of the free-text disagreements. Of the verdicts
+  recorded so far the large majority are `both`, and in most of those each
+  annotator captured something the other missed -- the human the conventional or
+  analytical context, GPT the stated wet-lab detail.
+* It means **the two manifests are complementary rather than redundant**. A merged
+  manifest would be better than either, which is a more useful conclusion than
+  ranking them.
+
+Against that, one adjudicated case went to GPT precisely because the human's
+inference over-reached: asserting `Smart-seq2` where the paper says only
+"well-based smart-seq protocol", these being distinct chemistries. Expert
+inference is usually right and is not always right.
+
+**1.6 Numeric fields are the weak class.** *(established)* 12.1% recall against
 45.7% for prose. Quantities -- cell counts, viabilities, volumes, cycle numbers --
 are omitted far more than narrative content.
 
-**1.6 GPT's `temp` field is the one real invention candidate.** *(provisional)*
+**1.7 GPT's `temp` field is the one real invention candidate.** *(provisional)*
 20 of GPT's 63 unsupported values are growth temperatures in papers that state
 none. Numbers cannot be paraphrase or inference in the way prose can. Needs
 checking case by case before it is reported as fabrication.
@@ -131,7 +161,15 @@ same fact; 381124 *is* the NCBI taxon ID for Liliopsida.
 category, the other transcribes the procedure with reagents and concentrations.
 Both are faithful; the schema never says which is wanted.
 
-**3.4 Some fields are curator-assigned labels, not extracted facts**
+**3.4 `literature_source_reference` does not specify a citation format**
+*(established)* -- one annotator gives an abbreviated citation plus a PMID, the
+other a full prose citation from the reference list. Both name the same work.
+**Recommendation: the template should require a resolvable identifier (PMID or
+DOI)**, which is machine-actionable where a prose citation is not; a free-text
+citation may accompany it. Handled in the tool by comparing citations on the work
+they name rather than literally.
+
+**3.5 Some fields are curator-assigned labels, not extracted facts**
 *(established)* -- `protocol_name`, `samp_name`. Grounding against the manuscript
 is not a meaningful test for these, and scoring disagreement between two valid
 labels is not measuring extraction quality.

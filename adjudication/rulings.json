@@ -36,12 +36,16 @@
     "id": "standardised_protocol_label_vs_transcription",
     "column": "dissociation_description",
     "columns": [
-      "protocol_name",
-      "single_cell_quality_metric",
+      "amplification_method",
+      "design_description",
       "dissociation_protocol_method",
+      "isol_growth_condt",
       "lib_construction_method",
-      "workflow",
-      "amplification_method"
+      "protocol_name",
+      "samp_collect_method",
+      "samp_mat_process",
+      "single_cell_quality_metric",
+      "workflow"
     ],
     "verdict": "both",
     "reference_pattern": ".",
@@ -51,7 +55,7 @@
     "rationale": "In the free-text protocol fields the two annotators describe the same standardised method at different granularity: the reference records the method category (e.g. 'Trypan blue vitality stain'), the test transcribes the procedure with reagents and concentrations. These single-cell protocols are sufficiently standardised that a laboratory reader recovers the same method from either, so both values are valid. Applied only where the reference is a short label (<=8 words) and the test is a full transcription (>=20 words); disagreements of comparable length are left for individual adjudication, since those are not this pattern.",
     "decided_by": "felix.shaw@earlham.ac.uk",
     "decided_on": "2026-09-09",
-    "note": "Granularity difference, not a factual disagreement. Worth noting in the write-up that the schema does not state the intended level of detail for these fields."
+    "note": "Granularity difference, not a factual disagreement. Worth noting in the write-up that the schema does not state the intended level of detail for these fields. Extended to samp_collect_method, samp_mat_process, isol_growth_condt and design_description, where the same label-against-transcription pattern occurs."
   },
   {
     "id": "protocol_name_is_curator_assigned",
