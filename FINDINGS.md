@@ -47,6 +47,15 @@ conflicts, 100 have the human grounded in the paper and GPT not, but **64 are
 the other way round** -- roughly one disagreement in seven where the reference is
 the weaker answer. Every one of those currently scores against GPT.
 
+Treat 64 as an **upper bound**, not a count. Grounding measures vocabulary
+overlap, so a value can be grounded and still wrong. In the Yan paper GPT
+answered `env_local_scale` with `Rice plant` -- scored `verbatim`, because both
+words occur throughout -- while the human answered `Univ of Georgia greenhouse
+facility`, scored only `partial`, and was correct: the methods say "rice plants
+grown in the greenhouse" and the corresponding author is at Georgia. Grounded but
+answering the wrong question is a real failure mode, and adjudication is the only
+way to separate it.
+
 **1.5 The two annotators differ in kind, not only in quality: the human applies
 expert inference, GPT stays close to the text.** *(established, from
 adjudication)*
@@ -132,7 +141,33 @@ samples cannot be told apart.
 **2.8 Main text only; no supplementary material.** Both annotators are
 understood to have worked from the same PDFs. *(open -- see 4.1)*
 
-**2.9 Adjudication is incomplete.** 90 of 449 conflicts settled at the time of
+**2.9 There is no inter-annotator baseline, and this may be the study's most
+important limitation.**
+
+Almost every disagreement adjudicated so far is of a kind that two human
+curators would also produce: how much of a protocol to transcribe, whether to
+write `FACS` or spell it out, whether to record the conventional-but-unstated
+`agar`, whether `input_molecule` means the captured or the sequenced molecule.
+The human curators in this corpus are demonstrably not consistent even with each
+other -- some wrote `cDNA` and others `mRNA` for the same chemistry (3.1).
+
+Without a second independent human annotation of the same papers, the study
+cannot say whether GPT diverges from a human curator **more than two human
+curators diverge from one another**. Every figure here is a human-versus-model
+distance with no human-versus-human distance to compare it against, so it cannot
+on its own support a claim that the model is worse.
+
+The one place the data does speak is structural: GPT records 0.77x the rows
+(1.1). Under-enumeration of samples and runs is not a stylistic difference and
+is unlikely to be matched by a careful human. The field-level differences, by
+contrast, look like ordinary annotator variation.
+
+**Recommended:** have a second curator annotate a subset -- five or six papers
+would do -- and run the identical pipeline on that pair. It would convert most of
+this report's figures from uncalibrated distances into interpretable ones, and it
+is the first thing a reviewer will ask for.
+
+**2.10 Adjudication is incomplete.** 90 of 449 conflicts settled at the time of
 writing. Any accuracy claim derived from conflicts is provisional until the
 queue is worked.
 
@@ -235,3 +270,12 @@ The useful conclusion is not a single accuracy score. It is a division of
 labour: **GPT is a strong first-pass populator and a weak enumerator.** The row
 skeleton -- how many samples, libraries and runs -- is better established by a
 human or by a script reading the SRA/GEO record; GPT is then good at filling it.
+
+The framing to avoid is "the model is N% accurate". The evidence does not support
+it: the reference is unvalidated and wrong in roughly one conflict in seven
+(1.4), a quarter of comparisons are unscoreable by construction (2.2), and there
+is no human-versus-human baseline to say whether the remaining differences are
+model-specific at all (2.9). What the evidence does support is a description of
+*how* the two annotators differ -- in enumeration, in diligence per field, and in
+the use of expert inference versus textual fidelity -- and a recommendation about
+how to combine them.
