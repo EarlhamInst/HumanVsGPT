@@ -204,7 +204,27 @@ DOI)**, which is machine-actionable where a prose citation is not; a free-text
 citation may accompany it. Handled in the tool by comparing citations on the work
 they name rather than literally.
 
-**3.5 Some fields are curator-assigned labels, not extracted facts**
+**3.5 The inherited MIxS/ENA environmental fields do not fit laboratory plant
+studies** *(established)* -- `env_local_scale`, `env_broad_scale`, `env_medium`,
+`geo_loc_name`. These come from the ENA/MIxS environmental-sampling schema, where
+they expect ENVO ontology terms describing where a sample was taken from the
+world. For a controlled-environment plant experiment there is often no sensible
+answer, and the documentation gives little guidance, so the two annotators
+answered differently in kind rather than differently in fact: `Univ of Georgia
+greenhouse facility` against `Rice plant`, `Laboratory` against `Controlled
+growth cabinet`.
+
+17 `env_local_scale` conflicts corpus-wide, plus further disagreement in the
+sibling fields. These are also where the model's unsupported values concentrate
+(`temp`, `env_local_scale`, `env_broad_scale`, `env_medium` -- see 1.7), which is
+consistent with an annotator inventing plausible answers to a question the paper
+never addresses because the schema insists on one.
+
+**Recommendation:** either drop these fields for laboratory studies, or define
+their intended values for that case. As they stand they generate disagreement
+that measures the schema rather than the annotator.
+
+**3.6 Some fields are curator-assigned labels, not extracted facts**
 *(established)* -- `protocol_name`, `samp_name`. Grounding against the manuscript
 is not a meaningful test for these, and scoring disagreement between two valid
 labels is not measuring extraction quality.
