@@ -167,6 +167,11 @@ would do -- and run the identical pipeline on that pair. It would convert most o
 this report's figures from uncalibrated distances into interpretable ones, and it
 is the first thing a reviewer will ask for.
 
+**Decided: out of scope for this study, and reported as such.** It is a separate
+piece of work. The limitation stands and must be stated plainly rather than
+worked around; conclusions are framed as descriptions of how the two annotators
+differ, not as claims that one is better.
+
 **2.10 Grounding cannot check numeric fields at all.** A bare numeral yields no
 distinctive tokens, so a numeric value is `not_assessable`; and where a numeric
 value sits inside a sentence, the surrounding words can score it `grounded` while
@@ -251,6 +256,11 @@ never addresses because the schema insists on one.
 **Recommendation:** either drop these fields for laboratory studies, or define
 their intended values for that case. As they stand they generate disagreement
 that measures the schema rather than the annotator.
+
+**Decided: these fields stay in the scoring.** Excluding them would improve the
+headline figures by removing a category the annotators genuinely struggled with,
+and the struggle is itself part of the result. They are reported as a schema
+finding instead.
 
 **3.6 `lib_size` is read in incompatible senses** *(established)* -- the human
 recorded `160470000000`, a size in bases; GPT recorded `18 scATAC-seq libraries`,

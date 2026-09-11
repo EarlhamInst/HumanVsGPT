@@ -146,7 +146,11 @@ def cmd_adjudicate(args: argparse.Namespace) -> int:
     if args.pdf_dir:
         papers = _load_papers(pairs_csv, Path(args.pdf_dir), Path(args.cache))
     worksheet = build_worksheet(
-        results, papers, verdicts, only_test_grounded=args.test_grounded_only
+        results,
+        papers,
+        verdicts,
+        only_test_grounded=args.test_grounded_only,
+        only_reference_grounded=args.reference_grounded_only,
     )
     # Always rewrite the worksheet, including when it is empty: leaving a stale
     # file in place would show conflicts that have since been settled.
@@ -231,6 +235,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--test-grounded-only", action="store_true",
         help="worksheet only the conflicts where the test value is grounded in "
              "the paper and the reference value is not",
+    )
+    adj.add_argument(
+        "--reference-grounded-only", action="store_true",
+        help="the mirror slice: only the conflicts where the reference value is "
+             "grounded and the test value is not -- where the test manifest is "
+             "most likely to have invented something",
     )
     adj.add_argument("-o", "--out", default="out", help="output directory")
     adj.set_defaults(func=cmd_adjudicate)

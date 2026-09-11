@@ -261,6 +261,7 @@ def build_worksheet(
     papers: dict[str, object],
     verdicts: "Verdicts | None" = None,
     only_test_grounded: bool = False,
+    only_reference_grounded: bool = False,
 ) -> list[dict]:
     """Build a reviewable worksheet of conflicts still needing a human decision.
 
@@ -290,6 +291,14 @@ def build_worksheet(
                 evidence = _evidence(paper, item.test)
                 if only_test_grounded and not (
                     test_grounding in grounded and reference_grounding not in grounded
+                ):
+                    continue
+                # The mirror slice: the reference is traceable to the paper and
+                # the test value is not. These are where the test manifest is
+                # most likely to have invented something, so they are worked as
+                # their own queue rather than mixed in with the rest.
+                if only_reference_grounded and not (
+                    reference_grounding in grounded and test_grounding not in grounded
                 ):
                     continue
             key = (result.paper, item.sheet, item.column, item.reference, item.test)
