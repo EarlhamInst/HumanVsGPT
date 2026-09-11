@@ -226,9 +226,40 @@ the model supplied a yield figure instead. The human's value scored `partial`,
 the model's `grounded`, and the model's was the one answering a different
 question. Expect grounding to be systematically unfair to correct negatives.
 
-**2.13 Adjudication is incomplete.** 90 of 449 conflicts settled at the time of
-writing. Any accuracy claim derived from conflicts is provisional until the
-queue is worked.
+**2.13 Adjudication is complete where the evidence discriminates, and
+deliberately incomplete elsewhere.**
+
+196 of 422 conflicts are settled. That is not a partial pass at a uniform task:
+it is **every conflict in which the grounding evidence can distinguish the two
+values**, namely all 66 where the model's value is traceable to the paper and the
+human's is not, and all 72 where the reverse holds, plus everything the rulings
+reach.
+
+The 226 left are a different problem, not a backlog of the same one:
+
+* **169 have both values grounded.** Both annotators are quoting the paper and
+  differ in interpretation, emphasis or granularity. Grounding cannot separate
+  them, by construction.
+* **56 have neither value grounded**, mostly the inherited MIxS environmental
+  fields (3.5) and fields answerable only from the archive (3.8b), where the
+  schema permits no right answer.
+
+These were left undecided **on purpose**. Settling them would require adjudicating
+either a further 195 cases by hand, or ruling on principles that would decide
+them in bulk -- and the candidate principles are not neutral. Four of the five
+largest remaining blocks share one shape: the human writes study-level or generic
+text where the model writes field-appropriate or row-specific text
+(`samp_collect_method`, `experimental_factor`, `description`,
+`design_description`). A blanket ruling there would settle roughly 47 conflicts
+in the model's favour by decree rather than by evidence, and should not be smuggled
+in as a tidying step.
+
+**Report the figure as it stands.** A decided count reached by bulk-ruling a
+contested principle, or by a tired reviewer working through 195 judgement calls,
+would be less trustworthy than an honest partial count with the remainder
+characterised. The unadjudicated conflicts are described above by kind and by
+field, which is itself a result: most of what remains is two defensible readings
+of the same sentence, or a field that cannot be answered from a manuscript.
 
 ---
 
