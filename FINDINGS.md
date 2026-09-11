@@ -13,6 +13,43 @@ before publication.
 
 ## 1. Headline findings
 
+**1.0 Overall agreement: 72.8% of fields both annotators completed -- but that is
+38% of the corpus.** *(established)*
+
+Of 6,487 field comparisons, both annotators wrote something in only **2,478**.
+Within those:
+
+| | n | share |
+|---|---|---|
+| agreed (identical, equivalent, or the model more specific) | 1,805 | **72.8%** |
+| model less specific (a real loss of detail) | 251 | 10.1% |
+| conflicted | 422 | 17.0% |
+
+Two softer readings are also defensible and should be given alongside it:
+**76.7%** counting the conflicts adjudicated as both-valid, and **86.8%** also
+counting "model less specific", which is thinner but not contradictory.
+
+The figure that must accompany any of these is the denominator. Agreement is
+measurable on **38% of the corpus**; in the rest one annotator was silent --
+2,387 fields the human filled and the model did not, 1,622 the reverse. Quoting
+"they agree about three quarters of the time" without that qualifier
+substantially overstates the overlap.
+
+Within the disagreements, the most common adjudicated outcome was that **neither
+annotator was wrong**: 96 of 422 conflicts were both-valid, against 81 where one
+side won (62 human, 19 model) and 20 where neither did. 225 remain deliberately
+undecided (2.13).
+
+**Suggested phrasing.** *The two manifests agree on 72.8% of the fields both
+annotators completed. Adjudication of the disagreements found the most common
+outcome, 96 of 422, to be that both values were valid. Agreement could be
+assessed on only 38% of fields, the remainder having been completed by one
+annotator alone.*
+
+And the caveat that governs it: with no second human annotation (2.9), there is
+no baseline saying whether 72.8% is high or low. Two human curators might agree
+less.
+
 **1.1 GPT is the more diligent annotator per field, and the less reliable one
 per entity.** *(established)*
 
