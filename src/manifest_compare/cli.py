@@ -28,6 +28,14 @@ from .report import corpus_report, scorecard, write_reports
 #: Excel writes these lock files beside an open workbook; they are not manifests.
 LOCK_PREFIX = "~$"
 
+#: Header written when the worksheet is empty, so the file is still readable.
+WORKSHEET_COLUMNS = [
+    "paper", "sheet", "column", "field_class",
+    "reference_value", "test_value",
+    "reference_grounding", "test_grounding", "reference_missing_terms",
+    "paper_evidence", "occurrences", "verdict", "note",
+]
+
 
 def _read_pairs(path: Path) -> list[dict[str, str]]:
     with path.open(newline="", encoding="utf-8") as handle:
@@ -140,14 +148,17 @@ def cmd_adjudicate(args: argparse.Namespace) -> int:
     worksheet = build_worksheet(
         results, papers, verdicts, only_test_grounded=args.test_grounded_only
     )
-    if worksheet:
-        with (out / "worksheet.csv").open("w", newline="", encoding="utf-8") as handle:
-            writer = csv.DictWriter(handle, fieldnames=list(worksheet[0]))
-            writer.writeheader()
-            writer.writerows(worksheet)
-        pending = sum(w["occurrences"] for w in worksheet)
-        print(f"\nworksheet: {len(worksheet)} distinct undecided conflicts "
-              f"({pending} rows) -> {out / 'worksheet.csv'}")
+    # Always rewrite the worksheet, including when it is empty: leaving a stale
+    # file in place would show conflicts that have since been settled.
+    worksheet_path = out / "worksheet.csv"
+    columns = list(worksheet[0]) if worksheet else WORKSHEET_COLUMNS
+    with worksheet_path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=columns)
+        writer.writeheader()
+        writer.writerows(worksheet)
+    pending = sum(w["occurrences"] for w in worksheet)
+    print(f"\nworksheet: {len(worksheet)} distinct undecided conflicts "
+          f"({pending} rows) -> {worksheet_path}")
     return 0
 
 
