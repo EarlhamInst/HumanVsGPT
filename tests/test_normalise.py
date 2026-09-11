@@ -56,3 +56,11 @@ def test_thousands_separators_are_not_a_thousandfold_error():
     assert quantity("target 7,000 protoplasts loaded")[0] == 7000.0
     assert quantity("16,000 nuclei")[0] == 16000.0
     assert quantity("1,200 pg")[0] == 1200.0
+
+
+def test_space_thousands_separators_are_handled_too():
+    # European typesetting writes 20 000 for twenty thousand.
+    assert quantity("20 000")[0] == 20000.0
+    assert quantity("1 200 000")[0] == 1200000.0
+    # Groups must be exactly three digits, so ordinary measurements are safe.
+    assert quantity("5 mm")[0] == 5.0

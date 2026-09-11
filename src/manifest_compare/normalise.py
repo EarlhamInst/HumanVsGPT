@@ -238,11 +238,14 @@ def accessions(value: object) -> dict[str, frozenset[str]]:
 
 # --- Quantities --------------------------------------------------------------
 
-#: A quantity, allowing comma thousands separators. Without the comma group
-#: `7,000` parses as 7, so a value identical to `7000` registers as a
-#: thousandfold disagreement rather than as the same number.
+#: A quantity, allowing comma or space thousands separators. Without them
+#: `7,000` and `20 000` parse as 7 and 20, so values identical to `7000` and
+#: `20000` register as thousandfold disagreements rather than as the same number.
+#: Separated groups must be exactly three digits, so `5 mm` and `2 3` are
+#: unaffected. The non-breaking space European typesetting uses is already folded
+#: to an ordinary space before this runs.
 _NUMBER = re.compile(
-    r"(-?\d{1,3}(?:,\d{3})+(?:\.\d+)?|-?\d+(?:\.\d+)?)"
+    r"(-?\d{1,3}(?:[ ,]\d{3})+(?:\.\d+)?|-?\d+(?:\.\d+)?)"
     r"\s*(?:x\s*10\^?(-?\d+))?\s*([a-z%/_]*)",
     re.I,
 )
@@ -269,7 +272,7 @@ def quantity(value: object) -> tuple[float, str] | None:
     match = _NUMBER.search(text)
     if not match:
         return None
-    magnitude = float(match.group(1).replace(",", ""))
+    magnitude = float(match.group(1).replace(",", "").replace(" ", ""))
     if match.group(2):
         magnitude *= 10 ** int(match.group(2))
     unit = re.sub(r"[^a-z%]", "", match.group(3) or "")
