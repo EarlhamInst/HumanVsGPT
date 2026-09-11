@@ -90,10 +90,36 @@ inference is usually right and is not always right.
 45.7% for prose. Quantities -- cell counts, viabilities, volumes, cycle numbers --
 are omitted far more than narrative content.
 
-**1.7 GPT's `temp` field is the one real invention candidate.** *(provisional)*
-20 of GPT's 63 unsupported values are growth temperatures in papers that state
-none. Numbers cannot be paraphrase or inference in the way prose can. Needs
-checking case by case before it is reported as fabrication.
+**1.7 No invention has been demonstrated on either side.** *(established; this
+replaces an earlier claim that was wrong)*
+
+An earlier version of this list recorded the model's `temp` values as the one
+real invention candidate, on the grounds that 20 of its 63 unsupported values
+were growth temperatures in papers that appeared to state none. **That claim does
+not survive checking and has been withdrawn.**
+
+Every one of those values examined by hand is quoted from its paper. The
+Guillotin regime -- "16 h light at 28 C and 8 h dark at 24 C" -- is verbatim, and
+it is the *human's* `24` that records only half of it. Bezrutczyk's `28-30 C`,
+Turco's `22 C` and Denyer's `22 C` are all stated in their papers too. The
+grounding check missed them because papers write temperatures compactly, as
+`22c` or `28-30c`, with neither space nor degree sign, and a separate bug parsed
+`7,000` as 7.
+
+What the `temp` case actually shows is schema pressure, not fabrication: the
+field is singular, plant growth has a day and a night temperature, and the model
+answered fully while the human picked one. See 3.5.
+
+Across both adjudication queues -- the 50 conflicts where the model was grounded
+and the human was not, and the mirror slice where the reverse holds -- no value
+on either side has yet been shown to be invented. Unsupported values have
+consistently turned out to be correct answers the checker could not match:
+acronyms, paraphrase, external lookups such as ORCIDs, and compact notation.
+
+**This is the single most important correction in the work.** A hallucination
+rate was nearly reported, and it would have been an artifact of four separate
+false-negative bugs in the measurement, every one of which ran against the more
+detailed value.
 
 ---
 
