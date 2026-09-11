@@ -308,6 +308,35 @@ labels is not measuring extraction quality.
 
 ---
 
+**3.8 Neither manifest was validated, and validation would have prevented about a
+third of the disagreement.** *(established)*
+
+131 of 440 conflicts -- **30%** -- occur in fields that are in practice closed
+vocabularies, where a validator enforcing the permitted terms would have made the
+two annotators agree by construction:
+
+| conflicts | field | example |
+|---|---|---|
+| 65 | `input_molecule` | `cDNA` vs `RNA` |
+| 12 | `technology` | `Single-cell RNA-seq` vs `10x Genomics Chromium 3' single cell` |
+| 10 | `cdna_read` | `2` vs a sentence describing the read |
+| 9 | `tax_class` | `381124` vs `Liliopsida` |
+| 8 | `dual_single_index` | `Single` vs `Single index` |
+| 6 | `trophic_level` | `4577` vs `Photoautotroph` |
+| 6 | `primeness` | `3 prime` vs `oligo-dT` |
+
+Some are simply wrong in a way a validator catches instantly: `trophic_level`
+holding `4577`, which is the NCBI taxon ID for *Zea mays*, and `tax_class` holding
+`381124` rather than the name it denotes. These are not disagreements about the
+science. One annotator put an identifier where a term belongs and nothing
+objected.
+
+**This is the practical recommendation of the whole study.** Much of what looks
+like a difference in extraction quality is the absence of a validation step that
+would cost little and would constrain human and machine annotators alike. It also
+bounds what a comparison like this can measure: against an unvalidated template,
+a third of the apparent disagreement is about format rather than content.
+
 **3.9 Summary: the schema, not the annotators, generates much of the
 disagreement.** Seven fields have now been identified where two careful readers
 cannot agree because the template does not define what is wanted:

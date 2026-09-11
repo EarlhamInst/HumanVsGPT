@@ -169,6 +169,7 @@ NUMERIC_COLUMNS: frozenset[str] = frozenset(
 VOCAB_COLUMNS: frozenset[str] = frozenset(
     {
         "suspension_type",
+        "dual_single_index",
         "lib_layout",
         "primeness",
         "input_molecule",

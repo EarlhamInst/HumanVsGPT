@@ -102,6 +102,16 @@ VOCAB: dict[str, dict[str, str]] = {
         "polyadenylated messenger rna": "mrna", "mrna": "mrna",
         "dna": "dna", "genomic dna": "dna",
     },
+    # The answer to this field is literally the word "single" or "dual", which
+    # collides with the stopword list: "single" is noise in "single cell" and the
+    # entire signal here. Treating the field as the closed vocabulary it is
+    # sidesteps that, and is what a validated template would have enforced.
+    "dual_single_index": {
+        "single": "single", "single index": "single", "si": "single",
+        "single-index": "single", "single indexing": "single",
+        "dual": "dual", "dual index": "dual", "di": "dual",
+        "dual-index": "dual", "dual indexing": "dual",
+    },
     "ploidy": {"diploid": "diploid", "2n": "diploid", "haploid": "haploid", "1n": "haploid"},
 }
 
