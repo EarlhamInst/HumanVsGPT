@@ -57,7 +57,9 @@ annotator was reading the paper.
 
 Over 21 pairs, 6,487 field comparisons:
 
-* recall **43.7%**, precision **70.0%**, structural fidelity **71%**
+* the two manifests **agree on 72.8%** of the fields both annotators completed --
+  though that is only 38% of the corpus; in the rest, one annotator was silent
+* recall **44.5%**, precision **70.9%**, structural fidelity **71%**
 * the model's dominant failure is silence, not error: `missing_in_test` is the
   largest single outcome at 36.9%
 * both manifests are overwhelmingly grounded in their papers -- **94.0%** human,
@@ -69,12 +71,17 @@ Over 21 pairs, 6,487 field comparisons:
 * of the 1,622 fields the model filled where the human was silent, **74.8%** are
   traceable to the paper and only **1.3%** are unsupported. The model's extra
   coverage is largely real content, not invention
-* of 459 conflicts, 100 have the human grounded and the model not -- but **64
-  are the other way round**, so in roughly one disagreement in seven the
-  reference is the weaker answer
+* of 422 conflicts, **196 have been adjudicated** -- every one where the grounding
+  evidence can discriminate. The most common outcome was that **neither annotator
+  was wrong**: 96 both-valid, against 62 to the human, 19 to the model and 20 to
+  neither
+* **no invention was found on either side.** Every ungrounded value examined by
+  hand proved to be a correct answer the checker could not match -- an acronym, a
+  paraphrase, an externally looked-up identifier, or compact notation
 
-Precision is therefore a floor, not a measurement, until the conflicts are
-adjudicated.
+Precision remains a floor rather than a measurement: the reference is
+unvalidated, and 226 conflicts are deliberately left undecided because grounding
+gives no signal there. See `FINDINGS.md`.
 
 ## Install
 

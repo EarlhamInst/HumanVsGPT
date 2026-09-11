@@ -123,9 +123,27 @@ inference over-reached: asserting `Smart-seq2` where the paper says only
 "well-based smart-seq protocol", these being distinct chemistries. Expert
 inference is usually right and is not always right.
 
-**1.6 Numeric fields are the weak class.** *(established)* 12.1% recall against
-45.7% for prose. Quantities -- cell counts, viabilities, volumes, cycle numbers --
-are omitted far more than narrative content.
+**1.6 Numeric fields are the weakest class, but only for recall -- not for
+accuracy.** *(established; revised after three parser fixes)*
+
+| class | n | recall | precision |
+|---|---|---|---|
+| identifier | 263 | 44.6% | **85.7%** |
+| text | 4,010 | 47.4% | 74.1% |
+| numeric | 747 | **13.8%** | 78.2% |
+| vocab | 1,467 | 26.5% | 64.8% |
+
+Numeric recall is by far the lowest: quantities -- cell counts, viabilities,
+volumes, cycle numbers -- are omitted far more often than narrative content. But
+numeric **precision is the second highest of any class**. When the model records
+a quantity it is usually right; it simply records fewer of them.
+
+An earlier version of this finding reported numeric precision as 68.9%, which was
+wrong. Three parser bugs were inflating the conflict count -- compact temperature
+notation, and comma and space thousands separators, which made `7,000` and
+`20 000` parse as 7 and 20. Correcting them moved numeric precision by more than
+nine points, far more than any other class. The recall figure barely moved,
+because recall is driven by omission rather than by parsing.
 
 **1.7 No invention has been demonstrated on either side.** *(established; this
 replaces an earlier claim that was wrong)*
