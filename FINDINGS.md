@@ -421,6 +421,15 @@ conflicts.
 * Nominalisation is not matched: a manifest saying `excision` does not match a
   paper saying `excised`. Plurals and simple verb endings are handled;
   derivational morphology is not.
+* PDF text extraction is unreliable at token level, and every failure found so
+  far penalises the more detailed value. Five distinct causes are confirmed:
+  line-break hyphenation (`cy-cles`), acronyms against expansions, compact
+  temperature notation (`22c`, `28-30c`), comma thousands separators (`7,000`
+  parsed as 7), and trademark glyphs fusing words (`FACSAria(TM)III` rendering as
+  `facsariatmiii`). Two were fixed in code; the rest are open. **Grounding should
+  therefore be read as a lower bound on both manifests**, and the gap between
+  them as narrower than the figures suggest, since the model paraphrases and so
+  produces longer values with more surface to misparse.
 * The grounding band depends partly on value length. A long value absorbs a few
   unmatched terms and still scores `grounded`; a short value with the same
   proportion of unmatched terms drops to `partial` or `unsupported`. Short values
