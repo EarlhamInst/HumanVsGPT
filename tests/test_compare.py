@@ -94,3 +94,19 @@ def test_different_works_still_conflict():
         "dissociation", "literature_source_reference",
         "Smith et al. 2019", "Jones et al. 2021",
     ) is Outcome.CONFLICT
+
+
+def test_version_notation_is_not_a_disagreement():
+    for reference, test in (("v4", "4"), ("V3", "version 3"), ("v1.1", "1.1")):
+        assert outcome(
+            "lib_prep", "library_prep_kit_version", reference, test
+        ) is Outcome.EQUIVALENT
+    assert outcome(
+        "lib_prep", "library_prep_kit_version", "v2", "v3"
+    ) is Outcome.CONFLICT
+
+
+def test_yes_no_notation_is_not_a_disagreement():
+    for reference, test in (("none", "No"), ("N/A", "no"), ("Yes", "true")):
+        assert outcome("lib_prep", "spike_in", reference, test) is Outcome.EQUIVALENT
+    assert outcome("lib_prep", "spike_in", "yes", "none") is Outcome.CONFLICT

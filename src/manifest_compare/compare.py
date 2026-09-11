@@ -48,12 +48,14 @@ from .align import Alignment, SheetAlignment, align
 from .io import Manifest
 from .normalise import (
     accessions,
+    boolean,
     canonical,
     fold,
     manufacturer_of,
     names_only_manufacturer,
     quantity,
     tokens,
+    version_number,
 )
 from .schema import (
     CLASS_WEIGHTS,
@@ -373,6 +375,28 @@ def compare_vocab(column: str, reference: str, test: str) -> tuple[Outcome, str]
     return Outcome.CONFLICT, f"'{ref_canonical}' vs '{test_canonical}'"
 
 
+def compare_boolean(reference: str, test: str) -> tuple[Outcome, str] | None:
+    """Compare two yes/no answers, or None if they are not both yes/no."""
+    ref_bool = boolean(reference)
+    test_bool = boolean(test)
+    if ref_bool is None or test_bool is None:
+        return None
+    if ref_bool == test_bool:
+        return Outcome.EQUIVALENT, f"both mean {'yes' if ref_bool else 'no'}"
+    return Outcome.CONFLICT, f"{'yes' if ref_bool else 'no'} vs {'yes' if test_bool else 'no'}"
+
+
+def compare_version(reference: str, test: str) -> tuple[Outcome, str] | None:
+    """Compare two values that are only version numbers, or None if they are not."""
+    ref_version = version_number(reference)
+    test_version = version_number(test)
+    if not (ref_version and test_version):
+        return None
+    if ref_version == test_version:
+        return Outcome.EQUIVALENT, f"same version ({ref_version}), different notation"
+    return Outcome.CONFLICT, f"version {ref_version} vs {test_version}"
+
+
 def compare_text(reference: str, test: str) -> tuple[Outcome, str]:
     """Compare free prose by token overlap, never by string equality.
 
@@ -382,6 +406,14 @@ def compare_text(reference: str, test: str) -> tuple[Outcome, str]:
     """
     if fold(reference) == fold(test):
         return Outcome.EXACT, ""
+
+    answer = compare_boolean(reference, test)
+    if answer:
+        return answer
+
+    version = compare_version(reference, test)
+    if version:
+        return version
 
     # Near-identical strings are a spelling difference, not a disagreement. The
     # human Cao manifest records the instrument as 'llumina NovaSeq 6000' -- a

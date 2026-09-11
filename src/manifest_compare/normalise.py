@@ -151,6 +151,41 @@ def names_only_manufacturer(value: object) -> bool:
     return folded.replace(maker, "").strip(" -,;") == ""
 
 
+#: Ways of writing yes and no. Two manifests recording that no spike-in was used,
+#: one as `none` and one as `No`, were otherwise compared as opaque strings and
+#: reported as a disagreement about whether a spike-in was used at all.
+BOOLEAN: dict[str, bool] = {
+    "yes": True, "y": True, "true": True, "present": True, "used": True,
+    "no": False, "n": False, "none": False, "not used": False, "false": False,
+    "n/a": False, "na": False, "not applicable": False, "nil": False,
+    "not used.": False, "no spike-in": False, "no spike in": False,
+}
+
+
+def boolean(value: object) -> bool | None:
+    """The yes/no a value denotes, or None if it is not a yes/no answer."""
+    return BOOLEAN.get(fold(value).strip(". "))
+
+
+_VERSION = re.compile(r"^v(?:er(?:sion)?)?[\s.]*([0-9][0-9.]*)$", re.I)
+
+
+def version_number(value: object) -> str:
+    """The bare version a value denotes, if it is only a version.
+
+    `v4`, `V4`, `version 4` and `4` are one version written four ways. Without
+    this they are compared as opaque strings and register as a disagreement
+    about which kit was used, which is the opposite of what they say.
+    """
+    folded = fold(value)
+    if not folded:
+        return ""
+    match = _VERSION.match(folded)
+    if match:
+        return match.group(1)
+    return folded if re.fullmatch(r"[0-9][0-9.]*", folded) else ""
+
+
 def canonical(column: str, value: object) -> str:
     """Canonical form of a controlled-vocabulary value, or the folded value."""
     folded = fold(value)

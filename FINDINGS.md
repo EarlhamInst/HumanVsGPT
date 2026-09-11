@@ -167,7 +167,35 @@ would do -- and run the identical pipeline on that pair. It would convert most o
 this report's figures from uncalibrated distances into interpretable ones, and it
 is the first thing a reviewer will ask for.
 
-**2.10 Adjudication is incomplete.** 90 of 449 conflicts settled at the time of
+**2.10 Grounding cannot check numeric fields at all.** A bare numeral yields no
+distinctive tokens, so a numeric value is `not_assessable`; and where a numeric
+value sits inside a sentence, the surrounding words can score it `grounded` while
+the number itself -- the entire informational content -- goes unchecked. In the
+Yan `lib_size` conflict the human's figure was unassessable and GPT's was scored
+grounded on the words around a number the paper never states. Since numeric
+fields are also the model's weakest class (1.6), this is a blind spot exactly
+where the analysis would most benefit from evidence.
+
+**2.11 A comparison cannot see what both annotators missed.** The method measures
+disagreement, so anything omitted by *both* manifests is structurally invisible to
+it. Adjudication surfaced one example by accident: on the Conde paper both
+annotators recorded the funder and neither recorded the grant number
+`DE-SC0018247`, printed in the same sentence, though the manifest has a `funding`
+field for it. Shared blind spots of this kind cannot be counted from the present
+analysis and would need a separate pass -- for instance, checking each manifest
+against a checklist of what the paper states -- to quantify.
+
+**2.12 Grounding cannot validate a correct statement of absence.** Where a paper
+reports nothing for a field, the accurate answer is a negative one -- `None
+listed` -- and a presence-matching check will always score it poorly, because the
+words of a negative claim are by definition not in the document. In the Dorrity
+paper the human correctly recorded that no nuclei quality assessment was reported
+(no viability stain, trypan blue, DAPI or counting device appears anywhere), and
+the model supplied a yield figure instead. The human's value scored `partial`,
+the model's `grounded`, and the model's was the one answering a different
+question. Expect grounding to be systematically unfair to correct negatives.
+
+**2.13 Adjudication is incomplete.** 90 of 449 conflicts settled at the time of
 writing. Any accuracy claim derived from conflicts is provisional until the
 queue is worked.
 
@@ -224,24 +252,71 @@ never addresses because the schema insists on one.
 their intended values for that case. As they stand they generate disagreement
 that measures the schema rather than the annotator.
 
-**3.6 Some fields are curator-assigned labels, not extracted facts**
+**3.6 `lib_size` is read in incompatible senses** *(established)* -- the human
+recorded `160470000000`, a size in bases; GPT recorded `18 scATAC-seq libraries`,
+a count. MIxS defines it as the total number of clones in the library, which
+matches neither usage cleanly. Neither value was verifiable in the manuscript.
+
+**3.7 `tax_ident` asks a question that does not arise for these studies**
+*(established)* -- in MIxS it holds the phylogenetic marker used to assign an
+organism name (16S rRNA gene, multi-marker approach), which is meaningful when
+sequencing an unknown environmental sample and not when working with a named
+*Arabidopsis* accession. The human answered with NCBI taxon 3702, which belongs
+in `samp_taxon_id` and was recorded there too; GPT described the transgenic line
+and its GFP selection marker. Neither is taxonomic identification.
+
+**3.8 Some fields are curator-assigned labels, not extracted facts**
 *(established)* -- `protocol_name`, `samp_name`. Grounding against the manuscript
 is not a meaningful test for these, and scoring disagreement between two valid
 labels is not measuring extraction quality.
 
 ---
 
+**3.9 Summary: the schema, not the annotators, generates much of the
+disagreement.** Seven fields have now been identified where two careful readers
+cannot agree because the template does not define what is wanted:
+`input_molecule`, `tax_class`, the free-text protocol fields,
+`literature_source_reference`, the inherited MIxS environmental fields,
+`lib_size` and `tax_ident`. Several are inherited from ENA/MIxS, where they were
+designed for environmental sampling and do not transfer to controlled laboratory
+plant experiments.
+
+Two failure modes recur. Fields **designed for a different kind of study** have
+no sensible answer here, so annotators invent one or answer a neighbouring
+question. Fields **left undefined** are read in incompatible senses -- a size
+against a count, a label against a transcription, the captured molecule against
+the sequenced one.
+
+This may be the most transferable result in the work: a substantial share of what
+looks like extraction error is under-specified metadata standards, and it would
+affect any annotator, human or machine.
+
 ## 4. Open questions
 
-**4.1 Did the human curators have supplementary material GPT did not?**
-*(provisional)* The Cao paper defers protocol detail explicitly -- *"protoplast
-counting and viability assessment are available in Appendix S1"* -- and the human
-manifest records a viability method (`fluorescence-diacetate`, `hemocytometer`)
-whose terms are absent from the main text. One instance only; it survived
-correction of two grounding bugs, so it is not an artifact. If the human worked
-from paper plus supplement and GPT from paper alone, part of the recall gap
-measures an asymmetry of evidence rather than of ability. **This needs settling
-before publication.**
+**4.1 The human curators sometimes had supplementary material GPT did not --
+real, but rare.** *(established; was open)*
+
+Confirmed on the Cao paper. The human's `dissociation_protocol_method` is a
+verbatim supplementary methods protocol: twenty distinctive strings from it
+(Gillette, Kimberly-Clark, Sartorius, GoldBio, Onozuka, macerozyme, pectolyase,
+W5 solution, specific reagent masses) appear nowhere in the PDF, and the main
+text states the protocol is "available in Appendix S1 section of the supporting
+information". GPT could not have produced that value from the corpus it was
+given.
+
+Scope: a corpus-wide scan finds only **five** long, poorly-grounded human values
+across the 21 papers, in five different papers. Four further papers defer to
+supplementary material in their main text yet show none, so in most cases the
+human worked from the main text as GPT did.
+
+So this is a caveat to state, not a confound that undermines the comparison: it
+affects a handful of values, not the 2,393 fields the model did not fill. Report
+it, and exclude those values from any claim about relative completeness.
+
+**Caveat on the scan:** it detects only long values, so a supplementary-sourced
+number or short phrase would pass unnoticed -- the Cao viability metric
+(`fluorescence-diacetate`, `hemocytometer`) is exactly such a case and was found
+by hand. Treat five as a lower bound.
 
 **4.2 Two papers buck the fill-rate trend** -- Liu (human 59%, GPT 42%) and
 Vukašinović (53%, 49%) -- and in both GPT also recorded far fewer rows. Worth
@@ -269,17 +344,34 @@ a contradiction rather than a difference of specificity; token containment could
 not see it because "Illumina" is not a word in "NextSeq 500". Reclassified 10
 conflicts.
 
-**5.3 Referential integrity is deliberately not checked.** These manifests are
+**5.3 Known unfixed limitations of the grounding and comparison checks.**
+
+* A bare publisher or PubMed URL carries neither author surname nor parseable
+  year, so the citation matcher cannot tell that it names the same work as a
+  prose citation. Three such conflicts were adjudicated by hand. Resolving
+  identifiers to metadata would need network access and was not attempted.
+* Vendor-specific shorthand is not expanded -- `GEM` for 10x gel bead-in-emulsion,
+  `l-cys` for L-cysteine. The acronym table covers common domain terms only; the
+  tail is long and was not pursued.
+* Nominalisation is not matched: a manifest saying `excision` does not match a
+  paper saying `excised`. Plurals and simple verb endings are handled;
+  derivational morphology is not.
+* The grounding band depends partly on value length. A long value absorbs a few
+  unmatched terms and still scores `grounded`; a short value with the same
+  proportion of unmatched terms drops to `partial` or `unsupported`. Short values
+  made only of common domain words (`Plant incubator`) are not assessable at all.
+
+**5.4 Referential integrity is deliberately not checked.** These manifests are
 unvalidated extractions; a dangling foreign key is a spreadsheet defect, not a
 misreading. The `file` sheet is excluded for a related reason: neither annotator
 recorded real raw-file entries.
 
-**5.4 Row matching is content-based and order-independent**, using optimal
+**5.5 Row matching is content-based and order-independent**, using optimal
 assignment with propagation along the entity graph. State this: a positional or
 identifier-based comparison of these manifests would report near-total
 disagreement between documents that largely agree.
 
-**5.5 All thresholds and weights are recorded in `out/run.json`** alongside input
+**5.6 All thresholds and weights are recorded in `out/run.json`** alongside input
 SHA-256s, so any cut-off can be inspected rather than inferred.
 
 ---
