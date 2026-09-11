@@ -129,6 +129,19 @@ ACRONYMS: dict[str, str] = {
     "rt": "reverse transcription",
     "cdna": "complementary dna",
     "sop": "standard operating procedure",
+    # Funding agencies. The funder field is written as an acronym by one
+    # annotator and spelled out by the other, and neither form is wrong.
+    "nih": "national institutes of health",
+    "nsf": "national science foundation",
+    "doe": "department of energy",
+    "usda": "united states department of agriculture",
+    "erc": "european research council",
+    "bbsrc": "biotechnology and biological sciences research council",
+    "nsfc": "national natural science foundation of china",
+    "dfg": "deutsche forschungsgemeinschaft",
+    "fwf": "austrian science fund",
+    "hhmi": "howard hughes medical institute",
+    "ber": "biological and environmental research",
 }
 
 #: Reverse index: a word of an expansion -> the acronyms it belongs to.
