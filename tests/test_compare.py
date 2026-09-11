@@ -110,3 +110,8 @@ def test_yes_no_notation_is_not_a_disagreement():
     for reference, test in (("none", "No"), ("N/A", "no"), ("Yes", "true")):
         assert outcome("lib_prep", "spike_in", reference, test) is Outcome.EQUIVALENT
     assert outcome("lib_prep", "spike_in", "yes", "none") is Outcome.CONFLICT
+
+
+def test_read_notation_is_not_a_disagreement():
+    assert outcome("sequencing", "cdna_read", "R1", "Read 1") is Outcome.EQUIVALENT
+    assert outcome("sequencing", "cdna_read", "R1", "Read 2") is Outcome.CONFLICT

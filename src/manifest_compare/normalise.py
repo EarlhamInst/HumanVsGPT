@@ -112,6 +112,12 @@ VOCAB: dict[str, dict[str, str]] = {
         "dual": "dual", "dual index": "dual", "di": "dual",
         "dual-index": "dual", "dual indexing": "dual",
     },
+    # Which read a value names. `R1` and `Read 1` are the same read.
+    "cdna_read": {
+        "r1": "read 1", "read1": "read 1", "read 1": "read 1", "1": "read 1",
+        "r2": "read 2", "read2": "read 2", "read 2": "read 2", "2": "read 2",
+        "i1": "index 1", "index1": "index 1", "index 1": "index 1",
+    },
     "ploidy": {"diploid": "diploid", "2n": "diploid", "haploid": "haploid", "1n": "haploid"},
 }
 
@@ -168,6 +174,7 @@ BOOLEAN: dict[str, bool] = {
     "yes": True, "y": True, "true": True, "present": True, "used": True,
     "no": False, "n": False, "none": False, "not used": False, "false": False,
     "n/a": False, "na": False, "not applicable": False, "nil": False,
+    "n.a.": False, "not applicable.": False, "none applicable": False,
     "not used.": False, "no spike-in": False, "no spike in": False,
 }
 

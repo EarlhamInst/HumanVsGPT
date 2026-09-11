@@ -337,6 +337,19 @@ would cost little and would constrain human and machine annotators alike. It als
 bounds what a comparison like this can measure: against an unvalidated template,
 a third of the apparent disagreement is about format rather than content.
 
+**3.8b Some fields cannot be answered from a manuscript at all.** *(established)*
+`i7_index` and its siblings expect an actual index sequence, which papers do not
+print: the Denyer manuscript contains no ACGT string of index length, no SI-GA
+code, and never uses the word "index", naming only the kit in its reagents table.
+Both annotators filled the field anyway -- one with the kit name, one with `Yes`
+-- and neither value is what the field asks for.
+
+These fields are populated from the sequencing archive submission, not from the
+paper. A manifest built by reading manuscripts cannot complete them, and scoring
+them measures only which annotator guessed more plausibly. Worth separating in
+any future comparison: fields answerable from the text, and fields answerable
+only from the archive.
+
 **3.9 Summary: the schema, not the annotators, generates much of the
 disagreement.** Seven fields have now been identified where two careful readers
 cannot agree because the template does not define what is wanted:

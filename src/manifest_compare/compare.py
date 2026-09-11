@@ -351,6 +351,12 @@ def compare_vocab(column: str, reference: str, test: str) -> tuple[Outcome, str]
             (Outcome.EXACT, "") if reference == test
             else (Outcome.EQUIVALENT, f"both -> '{ref_canonical}'")
         )
+    # "NA" and "not applicable" are the same non-answer however they are spelled,
+    # and a controlled-vocabulary field is as likely to carry one as free text is.
+    answer = compare_boolean(reference, test)
+    if answer:
+        return answer
+
     implied = _specificity(reference, test)
     if implied:
         return implied, "by token containment"

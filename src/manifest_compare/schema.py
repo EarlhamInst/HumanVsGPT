@@ -170,6 +170,7 @@ VOCAB_COLUMNS: frozenset[str] = frozenset(
     {
         "suspension_type",
         "dual_single_index",
+        "cdna_read",
         "lib_layout",
         "primeness",
         "input_molecule",
