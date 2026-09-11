@@ -48,3 +48,11 @@ def test_quantity_parses_the_forms_present_in_the_corpus():
     assert quantity("26 °C") == (26.0, "degc")
     assert quantity("5-mm root tips") == (5.0, "")
     assert quantity("not a number at all") is None
+
+
+def test_thousands_separators_are_not_a_thousandfold_error():
+    # `7,000` parsing as 7 made a value identical to `7000` register as a
+    # thousandfold disagreement.
+    assert quantity("target 7,000 protoplasts loaded")[0] == 7000.0
+    assert quantity("16,000 nuclei")[0] == 16000.0
+    assert quantity("1,200 pg")[0] == 1200.0

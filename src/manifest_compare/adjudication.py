@@ -69,6 +69,10 @@ class Ruling:
     test_pattern: str = ".*"
     reference_max_words: int | None = None
     """Apply only when the reference value is at most this many words."""
+    reference_min_words: int | None = None
+    """Apply only when the reference value is at least this many words."""
+    test_max_words: int | None = None
+    """Apply only when the test value is at most this many words."""
     test_min_words: int | None = None
     """Apply only when the test value is at least this many words.
 
@@ -98,6 +102,12 @@ class Ruling:
                 return False
         if self.test_min_words is not None:
             if len(item.test.split()) < self.test_min_words:
+                return False
+        if self.reference_min_words is not None:
+            if len(item.reference.split()) < self.reference_min_words:
+                return False
+        if self.test_max_words is not None:
+            if len(item.test.split()) > self.test_max_words:
                 return False
         return True
 

@@ -57,3 +57,20 @@ def test_an_item_verdict_overrides_a_ruling():
     )
     decision, source, note = verdicts.decide("paper", conflict("input_molecule", "cDNA", "RNA"))
     assert decision is Verdict.BOTH and source == "verdict" and note == "checked"
+
+
+def test_the_granularity_ruling_works_in_both_directions():
+    # The model is not always the verbose annotator, so the same granularity
+    # difference occurs with the roles reversed and must settle the same way.
+    forward = Ruling(
+        id="label_vs_transcription", column="dissociation_description",
+        verdict="both", reference_max_words=8, test_min_words=20, rationale="",
+    )
+    mirror = Ruling(
+        id="transcription_vs_label", column="dissociation_description",
+        verdict="both", reference_min_words=20, test_max_words=8, rationale="",
+    )
+    verdicts = Verdicts(rulings=[forward, mirror])
+    long_value = " ".join(["word"] * 25)
+    assert verdicts.decide("p", conflict("dissociation_description", "Enzyme-based", long_value))[0] is Verdict.BOTH
+    assert verdicts.decide("p", conflict("dissociation_description", long_value, "Enzyme-based"))[0] is Verdict.BOTH

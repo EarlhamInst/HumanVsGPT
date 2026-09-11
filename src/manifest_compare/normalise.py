@@ -228,7 +228,14 @@ def accessions(value: object) -> dict[str, frozenset[str]]:
 
 # --- Quantities --------------------------------------------------------------
 
-_NUMBER = re.compile(r"(-?\d+(?:\.\d+)?)\s*(?:x\s*10\^?(-?\d+))?\s*([a-z%/_]*)", re.I)
+#: A quantity, allowing comma thousands separators. Without the comma group
+#: `7,000` parses as 7, so a value identical to `7000` registers as a
+#: thousandfold disagreement rather than as the same number.
+_NUMBER = re.compile(
+    r"(-?\d{1,3}(?:,\d{3})+(?:\.\d+)?|-?\d+(?:\.\d+)?)"
+    r"\s*(?:x\s*10\^?(-?\d+))?\s*([a-z%/_]*)",
+    re.I,
+)
 
 #: Unit aliases folded to a canonical symbol before comparison.
 _UNIT_ALIASES = {
@@ -252,7 +259,7 @@ def quantity(value: object) -> tuple[float, str] | None:
     match = _NUMBER.search(text)
     if not match:
         return None
-    magnitude = float(match.group(1))
+    magnitude = float(match.group(1).replace(",", ""))
     if match.group(2):
         magnitude *= 10 ** int(match.group(2))
     unit = re.sub(r"[^a-z%]", "", match.group(3) or "")

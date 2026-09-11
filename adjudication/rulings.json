@@ -74,5 +74,30 @@
     "decided_by": "felix.shaw@earlham.ac.uk",
     "decided_on": "2026-09-09",
     "note": "Same class as protocol_name: grounding against the manuscript is not a meaningful test for an assigned label."
+  },
+  {
+    "id": "standardised_protocol_transcription_vs_label",
+    "column": "dissociation_description",
+    "columns": [
+      "amplification_method",
+      "design_description",
+      "dissociation_protocol_method",
+      "isol_growth_condt",
+      "lib_construction_method",
+      "protocol_name",
+      "samp_collect_method",
+      "samp_mat_process",
+      "single_cell_quality_metric",
+      "workflow"
+    ],
+    "verdict": "both",
+    "reference_pattern": ".",
+    "test_pattern": ".",
+    "reference_min_words": 20,
+    "test_max_words": 8,
+    "rationale": "The mirror of standardised_protocol_label_vs_transcription: the same granularity difference with the roles reversed, where the reference transcribes the procedure and the test records the method category. The reasoning is identical and so is the verdict -- these protocols are standardised enough that a laboratory reader recovers the same method from either. Written separately rather than by relaxing the original, so each direction states the shape it matches.",
+    "decided_by": "felix.shaw@earlham.ac.uk",
+    "decided_on": "2026-09-11",
+    "note": "Needed because the model is not always the verbose annotator; on some papers it summarises where it usually transcribes."
   }
 ]
