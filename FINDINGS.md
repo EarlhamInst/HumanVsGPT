@@ -70,9 +70,26 @@ means eight samples, from information spread across a figure legend and a data
 availability statement.
 
 **1.2 The dominant failure is omission, not error.** *(established)*
-`missing_in_test` is the largest single outcome at 36.9% of all comparisons.
-Precision (70.9%) far exceeds recall (44.5%), and the gap is entirely the cost
-of GPT's silences.
+
+`missing_in_test` is the largest single outcome at **36.8%** of all comparisons
+-- 2,387 fields the human recorded and the model did not. Precision (70.9%) far
+exceeds recall (44.5%), and the gap is entirely the cost of those silences.
+
+What was omitted was almost all there to be found. Checking each omitted value
+against its source PDF, 317 are too short to test; of the 2,070 that can be:
+
+| | n | share of testable |
+|---|---|---|
+| verbatim in the paper | 1,653 | 79.9% |
+| grounded (reworded, key terms present) | 304 | 14.7% |
+| partial | 77 | 3.7% |
+| unsupported | 36 | 1.7% |
+
+**94.5% of the omitted values are traceable to the paper.** The model was not
+failing to find content that wasn't there; it passed over content the human
+found, most of it stated verbatim. Read alongside 1.3, where 82.4% of the
+model's *extra* fields are likewise traceable, the picture is of two annotators
+reading the same available material and each recording a different subset of it.
 
 **1.3 The model is not fabricating.** *(established)*
 
@@ -228,7 +245,7 @@ maize anther samples all reading the same values, against GPT's 11. Including
 them raised the denominator so far that corpus row coverage read 7.0% instead of
 58.0%.
 
-**2.7 About a quarter of matched rows are ambiguously aligned** (26.7%), mostly
+**2.7 About a quarter of matched rows are ambiguously aligned** (25.4%), mostly
 where the human manifest omits the field distinguishing replicates. In Cao the
 sample sheet records genotype but never inoculation treatment, so the eight
 samples cannot be told apart.
