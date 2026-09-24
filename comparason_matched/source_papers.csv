@@ -1,0 +1,22 @@
+n,authors,year,title,doi,doi_url,is_preprint
+1,Bezrutczyk M. et al.,2021,Evidence for phloem loading via the abaxial bundle sheath cells in maize leaves,10.1093/plcell/koaa055,https://doi.org/10.1093/plcell/koaa055,False
+2,Cao Y. et al.,2023,Single-cell RNA sequencing profiles reveal cell type-specific transcriptional regulation networks conditioning fungal invasion in maize roots,10.1111/pbi.14097,https://doi.org/10.1111/pbi.14097,False
+3,Conde D. et al.,2022,Single-nuclei transcriptome analysis of the shoot apex vascular system differentiation in Populus,10.1242/dev.200632,https://doi.org/10.1242/dev.200632,False
+4,Denyer T. et al.,2019,Spatiotemporal Developmental Trajectories in the Arabidopsis Root Revealed Using High-Throughput Single-Cell RNA Sequencing,10.1016/j.devcel.2019.02.022,https://doi.org/10.1016/j.devcel.2019.02.022,False
+5,Dorrity M.W. et al.,2021,The regulatory landscape of Arabidopsis thaliana roots at single-cell resolution,10.1101/2020.07.17.204792,https://doi.org/10.1101/2020.07.17.204792,True
+6,Guillotin B. et al.,2023,A pan-grass transcriptome reveals patterns of cellular divergence in crops,10.1038/s41586-023-06053-0,https://doi.org/10.1038/s41586-023-06053-0,False
+7,Jean-Baptiste K. et al.,2019,Dynamics of Gene Expression in Single Root Cells of Arabidopsis thaliana,10.1105/tpc.18.00785,https://doi.org/10.1105/tpc.18.00785,False
+8,Kao P. et al.,2021,Gene expression variation in Arabidopsis embryos at single-nucleus resolution,10.1242/dev.199589,https://doi.org/10.1242/dev.199589,False
+9,Liu Z. et al.,2022,Identification of novel regulators required for early development of vein pattern in the cotyledons by single-cell RNA-sequencing,10.1111/tpj.15738,https://doi.org/10.1111/tpj.15738,False
+10,Lyu M. et al.,2025,The dynamic and diverse nature of parenchyma cells in the Arabidopsis root during secondary growth,10.1038/s41477-025-01938-6,https://doi.org/10.1038/s41477-025-01938-6,False
+11,Mendieta J.P. et al.,2024,Investigating the cis-regulatory basis of C3 and C4 photosynthesis in grasses at single-cell resolution,10.1073/pnas.2402781121,https://doi.org/10.1073/pnas.2402781121,False
+12,Misra C.S. et al.,2019,Transcriptomics of Arabidopsis sperm cells at single-cell resolution,10.1007/s00497-018-00355-4,https://doi.org/10.1007/s00497-018-00355-4,False
+13,Roszak P. et al.,2021,Cell-by-cell dissection of phloem development links a maturation gradient to cell specialization,10.1126/science.aba5531,https://doi.org/10.1126/science.aba5531,False
+14,Satterlee J.W. et al.,2023,A Wox3-patterning module organizes planar growth in grass leaves and ligules,10.1038/s41477-023-01405-0,https://doi.org/10.1038/s41477-023-01405-0,False
+15,Sun Y. et al.,2024,Progressive meristem and single-cell transcriptomes reveal the regulatory mechanisms underlying maize inflorescence development and sex differentiation,10.1016/j.molp.2024.06.007,https://doi.org/10.1016/j.molp.2024.06.007,False
+16,Turco G.M. et al.,2019,Molecular Mechanisms Driving Switch Behavior in Xylem Cell Differentiation,10.1016/j.celrep.2019.06.041,https://doi.org/10.1016/j.celrep.2019.06.041,False
+17,Vukasinovic N. et al.,2025,Polarity-guided uneven mitotic divisions control brassinosteroid activity in proliferating plant root cells,10.1016/j.cell.2025.02.011,https://doi.org/10.1016/j.cell.2025.02.011,False
+18,Wang J. et al.,2021,Single-cell-type transcriptomic analysis reveals distinct gene expression profiles in wheat guard cells in response to abscisic acid,10.1071/fp20368,https://doi.org/10.1071/fp20368,False
+19,Xu X. et al.,2021,Single-cell RNA sequencing of developing maize ears facilitates functional analysis and trait candidate gene discovery,10.1016/j.devcel.2020.12.015,https://doi.org/10.1016/j.devcel.2020.12.015,False
+20,Yan H. et al.,2024,Evolution of plant cell-type-specific cis-regulatory elements,10.1101/2024.01.08.574753,https://doi.org/10.1101/2024.01.08.574753,True
+21,Zong J. et al.,2022,A rice single cell transcriptomic atlas defines the developmental trajectories of rice floret and inflorescence meristems,10.1111/nph.18008,https://doi.org/10.1111/nph.18008,False
