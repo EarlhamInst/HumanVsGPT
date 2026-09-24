@@ -15,3 +15,6 @@ out/
 
 # editable install artefacts
 *.egg-info/
+
+# Working outputs from assistant sessions; not part of the analysis.
+Claude outputs/
