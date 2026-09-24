@@ -63,14 +63,15 @@ Over 21 pairs, 6,487 field comparisons:
 * the model's dominant failure is silence, not error: `missing_in_test` is the
   largest single outcome at 36.9%
 * both manifests are overwhelmingly grounded in their papers -- **94.0%** human,
-  **84.9%** GPT of assessable values. Of the human values that are not, almost
+  **85.0%** GPT of assessable values. Of the human values that are not, almost
   none are errors: they are ORCIDs looked up externally, standard terminology
   the paper words differently, and controlled-vocabulary inferences such as
   `Eukaryota; Viridiplantae`. Grounding detects absence from the document, not
   invention
-* of the 1,622 fields the model filled where the human was silent, **74.8%** are
-  traceable to the paper and only **1.3%** are unsupported. The model's extra
-  coverage is largely real content, not invention
+* of the 1,622 fields the model filled where the human was silent, 244 are too
+  short to test; of the 1,378 that can be tested **82.4% trace back to the
+  paper** and only **0.7%** do not. The model's extra coverage is real content
+  the human did not record, not invention
 * of 422 conflicts, **196 have been adjudicated** -- every one where the grounding
   evidence can discriminate. The most common outcome was that **neither annotator
   was wrong**: 96 both-valid, against 62 to the human, 19 to the model and 20 to

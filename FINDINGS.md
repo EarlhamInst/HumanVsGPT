@@ -71,13 +71,27 @@ availability statement.
 
 **1.2 The dominant failure is omission, not error.** *(established)*
 `missing_in_test` is the largest single outcome at 36.9% of all comparisons.
-Precision (69.7%) far exceeds recall (43.6%), and the gap is entirely the cost
+Precision (70.9%) far exceeds recall (44.5%), and the gap is entirely the cost
 of GPT's silences.
 
-**1.3 GPT is not fabricating.** *(established)* Of the 1,622 fields GPT filled
-where the human was silent -- 25% of all comparisons, scored in neither metric --
-**74.8%** of assessable values are traceable to the paper and only **1.3%** are
-unsupported. Its extra coverage is largely real content the human did not record.
+**1.3 The model is not fabricating.** *(established)*
+
+It filled **1,622 fields the human left blank** -- a quarter of all comparisons,
+and scored in neither metric, since a blank reference cell means *unknown* rather
+than *false*. Checked against the source PDFs: 244 are too short to test (values
+such as `Read 1`). Of the 1,378 that can be tested:
+
+| | n | share of testable |
+|---|---|---|
+| verbatim from the paper | 288 | 20.9% |
+| grounded (reworded, key terms present) | 848 | 61.5% |
+| partial | 233 | 16.9% |
+| **unsupported** | **9** | **0.7%** |
+
+**82.4% trace back to the paper and nine values do not.** The extra coverage is
+real content the human did not record. Two consequences: the model's precision
+score is an underestimate, since 1,622 largely-correct fields contributed nothing
+to it; and the human manifests are less complete than the recall figure implies.
 
 **1.4 The reference is wrong often enough to matter.** *(established)* Of 459
 conflicts, 100 have the human grounded in the paper and GPT not, but **64 are
@@ -200,11 +214,11 @@ and only two are actual defects. The residual is **not** a fabrication rate.
 
 **2.4 Verbatim-versus-paraphrase confound.** The human copies (65.2% of values
 verbatim from the paper); GPT rephrases (35.2%). Grounding rewards matching the
-paper's vocabulary, so part of the human's apparent advantage (93.7% against
-84.4%) is stylistic rather than substantive.
+paper's vocabulary, so part of the human's apparent advantage (94.0% against
+85.0%) is stylistic rather than substantive.
 
-**2.5 Mean and pooled figures differ substantially** -- recall 43.6% by paper
-against 29.3% pooled by field -- because the papers with most fields are those
+**2.5 Mean and pooled figures differ substantially** -- recall 44.5% by paper
+against 29.7% pooled by field -- because the papers with most fields are those
 GPT handled worst. Report both; neither is "the" number.
 
 **2.6 Five pairs were quarantined and the criterion must be stated.** The human
@@ -506,8 +520,8 @@ Report these; they affect how much weight the grounding figures carry.
 **5.1 Two false-negative bugs were found and fixed in the grounding check, both
 biased against detailed values.** PDF typesetting hyphenates across line breaks
 (`cy-cles`), and no allowance was made for inflection (`protoplasts` against
-`protoplast`). Correcting them moved human grounding 90.9% -> 93.7% and GPT
-80.1% -> 84.4%. GPT gained more, as expected. **The corrected figures remain a
+`protoplast`). Correcting them, and later the acronym and notation fixes, moved
+human grounding 90.9% -> 94.0% and the model's 80.1% -> 85.0%. GPT gained more, as expected. **The corrected figures remain a
 floor**: there will be further false negatives not yet found.
 
 **5.2 One comparison bug was fixed rather than adjudicated.** A manufacturer
