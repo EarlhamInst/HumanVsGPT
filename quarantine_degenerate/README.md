@@ -24,7 +24,8 @@ cell suspensions sharing identical protocol text are eight distinct suspensions
 if they point at eight distinct samples; only rows alike in both content and
 parentage count as redundant.
 
-See `quarantine_reasons.csv` for the sheet and counts that triggered each.
+See `quarantine_reasons.csv` for the sheet and counts that triggered each,
+with the model manifest's row count for the same sheet in `model_rows`.
 
 ## Borderline pairs left in the main set
 
