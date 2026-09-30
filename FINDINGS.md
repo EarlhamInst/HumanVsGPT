@@ -238,12 +238,44 @@ paper's vocabulary, so part of the human's apparent advantage (94.0% against
 against 29.7% pooled by field -- because the papers with most fields are those
 GPT handled worst. Report both; neither is "the" number.
 
-**2.6 Five pairs were quarantined and the criterion must be stated.** The human
-manifests contained blocks of rows identical in content and parentage, differing
-only by an auto-incremented ID. `pca_manifest_marchant_2025.xlsx` declares 2182
-maize anther samples all reading the same values, against GPT's 11. Including
-them raised the denominator so far that corpus row coverage read 7.0% instead of
-58.0%.
+**2.6 Five pairs were quarantined, and three papers had no counterpart.** The
+comparison scores 21 of the 26 matched pairs. The other five were withheld
+because their human manifests contain blocks of rows identical in content and
+parentage, differing only by an auto-incremented ID -- the signature of a
+spreadsheet fill-down, not of that many real entities. Scored as-is, they would
+penalise the model for failing to reproduce rows that describe nothing.
+Including them raised the denominator so far that corpus row coverage read 7.0%
+instead of 58.0%.
+
+A pair is quarantined when any sheet in the human manifest has
+
+    redundant rows >= 10  AND  redundant rows / total rows >= 0.90
+
+where a row is redundant if another row in the sheet shares its content
+signature (`align.content_signature`): every non-surrogate field, including
+foreign keys, so rows alike in content but hanging from different parents are
+not counted.
+
+| paper | sheet | human rows | distinct | model rows |
+|---|---|---|---|---|
+| Marchant and Walbot 2025, *The establishment of the anther somatic niche with single-cell sequencing* | sample | 2182 | 1 | 11 |
+| Guo et al. 2025, *An Arabidopsis single-nucleus atlas decodes leaf senescence and nutrient allocation* | sequencing | 338 | 23 | 1 |
+| Marand et al. 2025, *The genetic architecture of cell type-specific cis regulation in maize* | lib_prep | 40 | 2 | 1 |
+| Nobori et al. 2025, *A rare PRIMER cell state in plant immunity* | sample | 21 | 1 | 15 |
+| Feng et al. 2022, *Chromatin accessibility illuminates single-cell regulatory dynamics of rice root tips* | sample | 16 | 1 | 2 |
+
+Marchant's 2182 samples all read `Zea mays / anther / W23 bz2 / Standford, CA,
+USA`. Five milder cases (Guillotin 2023, Vukašinović 2025, Sun 2025, Cao 2023,
+Zong 2022; 40--85% redundant) fall below the threshold and remain in the set;
+they look like an unrecorded distinguishing field rather than a fill-down. The
+quarantined files, counts and full pre-quarantine pair list are in
+`quarantine_degenerate/`.
+
+Separately, three papers were never paired because only one annotator produced
+a manifest: Lee et al. 2023 and Satterlee et al. 2020 (human only) and Picard et
+al. 2021 (model only). Two human templates and two duplicate human manifests
+(Dorrity, Turco) were also set aside at matching; see
+`comparason_matched/README.md`.
 
 **2.7 About a quarter of matched rows are ambiguously aligned** (25.4%), mostly
 where the human manifest omits the field distinguishing replicates. In Cao the
