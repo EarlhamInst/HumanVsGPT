@@ -104,6 +104,9 @@ COMPARABLE: frozenset[Outcome] = CAPTURED | {
     Outcome.CONFLICT,
 }
 
+#: Everything the reference recorded: the recall denominator.
+RECALL_DENOMINATOR: frozenset[Outcome] = COMPARABLE | {Outcome.MISSING_IN_TEST}
+
 #: Outcomes a human or model must resolve against the source paper.
 NEEDS_ADJUDICATION: frozenset[Outcome] = frozenset(
     {Outcome.CONFLICT, Outcome.TEST_ONLY}
@@ -184,17 +187,37 @@ class PairResult:
     def _weighted(self, outcomes: frozenset[Outcome]) -> float:
         return sum(f.weight for f in self.fields if f.outcome in outcomes)
 
+    def _count(self, outcomes: frozenset[Outcome]) -> int:
+        return sum(1 for f in self.fields if f.outcome in outcomes)
+
+    # Recall and precision are reported unweighted: every field counts once, and
+    # the numerator is the fields where the test value agreed with the reference
+    # (exact, equivalent or more specific). The reference's own filled fields are
+    # the recall denominator; fields both sides filled are the precision
+    # denominator. The weighted variants below apply CLASS_WEIGHTS x SHEET_WEIGHTS
+    # to the same counts and are reported alongside, never in their place.
+
     @property
     def recall(self) -> float:
-        """Of fields the reference populated, the share the test also captured."""
-        denominator = self._weighted(CAPTURED | {Outcome.TEST_LESS_SPECIFIC,
-                                                 Outcome.CONFLICT,
-                                                 Outcome.MISSING_IN_TEST})
-        return self._weighted(CAPTURED) / denominator if denominator else 0.0
+        """Of fields the reference populated, the share where the test agreed."""
+        denominator = self._count(RECALL_DENOMINATOR)
+        return self._count(CAPTURED) / denominator if denominator else 0.0
 
     @property
     def precision(self) -> float:
         """Of fields both populated, the share where the test held up."""
+        denominator = self._count(COMPARABLE)
+        return self._count(CAPTURED) / denominator if denominator else 0.0
+
+    @property
+    def weighted_recall(self) -> float:
+        """`recall` with each field weighted by class and sheet."""
+        denominator = self._weighted(RECALL_DENOMINATOR)
+        return self._weighted(CAPTURED) / denominator if denominator else 0.0
+
+    @property
+    def weighted_precision(self) -> float:
+        """`precision` with each field weighted by class and sheet."""
         denominator = self._weighted(COMPARABLE)
         return self._weighted(CAPTURED) / denominator if denominator else 0.0
 

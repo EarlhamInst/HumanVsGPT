@@ -38,8 +38,8 @@ judged by token containment. Every field lands in one of seven outcomes.
 
 | | question |
 |---|---|
-| recall | of what the human recorded, how much did the model capture? |
-| precision | where both spoke, how often did they agree? |
+| recall | of the fields the human filled, how many did the model fill with an agreeing value? |
+| precision | of the fields both filled, how many agree? |
 | structural fidelity | are there the right number of rows? |
 | coverage | how much did each side fill in at all? |
 
@@ -59,9 +59,13 @@ Over 21 pairs, 6,487 field comparisons:
 
 * the two manifests **agree on 72.8%** of the fields both annotators completed --
   though that is only 38% of the corpus; in the rest, one annotator was silent
-* recall **44.5%**, precision **70.9%**, structural fidelity **71%**
+* pooled recall **37.1%** (1,805 of 4,865), pooled precision **72.8%** (1,805 of
+  2,478); per-paper means 50.0% and 72.7%; structural fidelity **71%**. A
+  variant weighted by field class and sheet (`schema.CLASS_WEIGHTS`,
+  `schema.SHEET_WEIGHTS`) is reported alongside in `run.json` and gives pooled
+  recall 29.7% and precision 70.2%; the unweighted figures are the headline
 * the model's dominant failure is silence, not error: `missing_in_test` is the
-  largest single outcome at 36.9%
+  largest single outcome at 36.8%
 * both manifests are overwhelmingly grounded in their papers -- **94.0%** human,
   **85.0%** GPT of assessable values. Of the human values that are not, almost
   none are errors: they are ORCIDs looked up externally, standard terminology

@@ -28,7 +28,10 @@ from pathlib import Path
 from . import __version__
 from .align import AMBIGUITY_MARGIN, LINK_BONUS, MATCH_THRESHOLD
 from .compare import (
+    CAPTURED,
+    COMPARABLE,
     NEEDS_ADJUDICATION,
+    RECALL_DENOMINATOR,
     NUMERIC_RTOL,
     TEXT_DIVERGENT,
     TEXT_EQUIVALENT,
@@ -59,6 +62,8 @@ def summary_rows(results: list[PairResult]) -> list[dict]:
                 "test_file": Path(result.test_provenance["path"]).name,
                 "recall": round(result.recall, 4),
                 "precision": round(result.precision, 4),
+                "weighted_recall": round(result.weighted_recall, 4),
+                "weighted_precision": round(result.weighted_precision, 4),
                 "structural_fidelity": round(result.structural_fidelity, 4),
                 "reference_filled": result.reference_filled,
                 "test_filled": result.test_filled,
@@ -128,15 +133,9 @@ def corpus_totals(results: list[PairResult]) -> dict:
         return {}
     n = len(results)
     pooled: list = [f for r in results for f in r.fields]
+    count = lambda fs, keep: sum(1 for f in fs if f.outcome in keep)
     weighted = lambda fs, keep: sum(f.weight for f in fs if f.outcome in keep)
-    captured = {Outcome.EXACT, Outcome.EQUIVALENT, Outcome.TEST_MORE_SPECIFIC}
-    recall_den = weighted(
-        pooled,
-        captured | {Outcome.TEST_LESS_SPECIFIC, Outcome.CONFLICT, Outcome.MISSING_IN_TEST},
-    )
-    precision_den = weighted(
-        pooled, captured | {Outcome.TEST_LESS_SPECIFIC, Outcome.CONFLICT}
-    )
+    ratio = lambda num, den: round(num / den, 4) if den else 0.0
     return {
         "pairs": n,
         "mean_recall": round(sum(r.recall for r in results) / n, 4),
@@ -144,12 +143,29 @@ def corpus_totals(results: list[PairResult]) -> dict:
         "mean_structural_fidelity": round(
             sum(r.structural_fidelity for r in results) / n, 4
         ),
-        "pooled_recall": round(weighted(pooled, captured) / recall_den, 4)
-        if recall_den
-        else 0.0,
-        "pooled_precision": round(weighted(pooled, captured) / precision_den, 4)
-        if precision_den
-        else 0.0,
+        "pooled_recall": ratio(
+            count(pooled, CAPTURED), count(pooled, RECALL_DENOMINATOR)
+        ),
+        "pooled_precision": ratio(
+            count(pooled, CAPTURED), count(pooled, COMPARABLE)
+        ),
+        "pooled_captured": count(pooled, CAPTURED),
+        "pooled_recall_denominator": count(pooled, RECALL_DENOMINATOR),
+        "pooled_precision_denominator": count(pooled, COMPARABLE),
+        # The same figures with CLASS_WEIGHTS x SHEET_WEIGHTS applied, so a
+        # reader can see what the weighting does without re-running anything.
+        "weighted": {
+            "mean_recall": round(sum(r.weighted_recall for r in results) / n, 4),
+            "mean_precision": round(
+                sum(r.weighted_precision for r in results) / n, 4
+            ),
+            "pooled_recall": ratio(
+                weighted(pooled, CAPTURED), weighted(pooled, RECALL_DENOMINATOR)
+            ),
+            "pooled_precision": ratio(
+                weighted(pooled, CAPTURED), weighted(pooled, COMPARABLE)
+            ),
+        },
         "fields_compared": len(pooled),
         "adjudication_needed": sum(len(r.adjudication_queue) for r in results),
         "reference_filled": sum(r.reference_filled for r in results),
@@ -285,10 +301,16 @@ def corpus_report(results: list[PairResult]) -> str:
         f"{len(results)} pairs | mean recall {totals['mean_recall']:.1%} | "
         f"mean precision {totals['mean_precision']:.1%} | "
         f"mean structural {totals['mean_structural_fidelity']:.0%}",
-        f"pooled recall {totals['pooled_recall']:.1%} | "
-        f"pooled precision {totals['pooled_precision']:.1%} | "
+        f"pooled recall {totals['pooled_recall']:.1%} "
+        f"({totals['pooled_captured']}/{totals['pooled_recall_denominator']}) | "
+        f"pooled precision {totals['pooled_precision']:.1%} "
+        f"({totals['pooled_captured']}/{totals['pooled_precision_denominator']}) | "
         f"{totals['fields_compared']} fields compared | "
         f"{totals['adjudication_needed']} need adjudication",
+        f"weighted (class x sheet): mean recall {totals['weighted']['mean_recall']:.1%} | "
+        f"mean precision {totals['weighted']['mean_precision']:.1%} | "
+        f"pooled recall {totals['weighted']['pooled_recall']:.1%} | "
+        f"pooled precision {totals['weighted']['pooled_precision']:.1%}",
         f"coverage: reference filled {totals['reference_filled']} fields, "
         f"test filled {totals['test_filled']} ({totals['coverage_ratio']:.2f}x). "
         "Coverage is descriptive only -- neither manifest is validated, so a "

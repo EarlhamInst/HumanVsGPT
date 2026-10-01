@@ -72,8 +72,9 @@ availability statement.
 **1.2 The dominant failure is omission, not error.** *(established)*
 
 `missing_in_test` is the largest single outcome at **36.8%** of all comparisons
--- 2,387 fields the human recorded and the model did not. Precision (70.9%) far
-exceeds recall (44.5%), and the gap is entirely the cost of those silences.
+-- 2,387 fields the human recorded and the model did not. Pooled precision (72.8%)
+far exceeds pooled recall (37.1%), and the gap is entirely the cost of those
+silences.
 
 What was omitted was almost all there to be found. Checking each omitted value
 against its source PDF, 317 are too short to test; of the 2,070 that can be:
@@ -234,9 +235,18 @@ verbatim from the paper); GPT rephrases (35.2%). Grounding rewards matching the
 paper's vocabulary, so part of the human's apparent advantage (94.0% against
 85.0%) is stylistic rather than substantive.
 
-**2.5 Mean and pooled figures differ substantially** -- recall 44.5% by paper
-against 29.7% pooled by field -- because the papers with most fields are those
+**2.5 Mean and pooled figures differ substantially** -- recall 50.0% by paper
+against 37.1% pooled by field -- because the papers with most fields are those
 GPT handled worst. Report both; neither is "the" number.
+
+Recall is the share of the human's filled fields where the model's value agreed
+(exact, equivalent or more specific); precision is the same count as a share of
+the fields both filled. Every field counts once. An earlier version of this
+document reported the weighted variant (`CLASS_WEIGHTS` x `SHEET_WEIGHTS`:
+recall 44.5% by paper, 29.7% pooled; precision 70.9% and 70.2%) without saying
+so. Weighting lowers recall because the model's omissions concentrate in
+identifier, vocabulary and numeric fields while its agreements are mostly free
+text. `run.json` now reports both; the unweighted figures are the headline.
 
 **2.6 Five pairs were quarantined, and three papers had no counterpart.** The
 comparison scores 21 of the 26 matched pairs. The other five were withheld
